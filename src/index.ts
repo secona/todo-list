@@ -1,19 +1,20 @@
 import express from 'express';
-import morgan from 'morgan';
+import mountRoutes from './routes';
+import { LOG_PREFIX } from './constants';
+import dbConnect from './dbConnect';
+import logger from './middlewares/logger';
 
 const app = express();
-const LOG_PREFIX = '[\x1B[36mSERVER\x1B[0m]';
-const logger = morgan(
-  `${LOG_PREFIX} :method :url \x1B[90m:status - :response-time ms\x1B[0m`
-);
+
+dbConnect()
+  .then(() => console.log(LOG_PREFIX, 'Connected to database'))
+  .catch(err => console.log(err));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
-app.get('/api', (_, res) => {
-  res.json({ message: 'Hello World!' });
-});
+mountRoutes(app);
 
 app.listen(5000, () => {
   console.log(LOG_PREFIX, 'Listening on port 5000');
