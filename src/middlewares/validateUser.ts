@@ -3,9 +3,12 @@ import { body, CustomValidator } from 'express-validator';
 import handleValidationResult from './handleValidator';
 import User from '../models/user.model';
 
-const isEmailAvailable: CustomValidator = email => {
+const isEmailAvailable: CustomValidator = (email, { req }) => {
   return User.findOne({ email }).then(data => {
-    if (data) return Promise.reject('Email already in use');
+    const id = req.params?.id || '';
+    if (data && data._id.toString() !== id) {
+      return Promise.reject('Email already in use');
+    }
   });
 };
 
