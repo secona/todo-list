@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/secona/todo-list#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^9.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.11.1",
@@ -26,6 +27,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.11",
     "@types/mongoose": "^5.10.5",
     "@types/morgan": "^1.9.2",
