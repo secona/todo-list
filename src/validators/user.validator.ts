@@ -1,6 +1,5 @@
-import { RequestHandler } from 'express';
 import { body, CustomValidator } from 'express-validator';
-import handleValidationResult from './handleValidator';
+import createValidator from './createValidator';
 import User from '../models/user.model';
 
 const isEmailAvailable: CustomValidator = (email, { req }) => {
@@ -12,7 +11,7 @@ const isEmailAvailable: CustomValidator = (email, { req }) => {
   });
 };
 
-const validateUser: RequestHandler[] = [
+const validateUser = createValidator(
   body('name', 'Invalid Name')
     .isString()
     .bail()
@@ -27,8 +26,7 @@ const validateUser: RequestHandler[] = [
     .isString()
     .bail()
     .isLength({ min: 8 })
-    .withMessage('Password must be 8 characters or more'),
-  handleValidationResult,
-];
+    .withMessage('Password must be 8 characters or more')
+);
 
 export default validateUser;

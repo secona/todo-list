@@ -1,6 +1,6 @@
 import express from 'express';
-import validateUser from '../middlewares/validateUser';
-import validateSignIn from '../middlewares/validateSignIn';
+import validateUser from '../validators/user.validator';
+import validateSignIn from '../validators/signIn.validator';
 import authenticateToken from '../middlewares/authenticateToken';
 import * as userController from '../controllers/user.controller';
 
