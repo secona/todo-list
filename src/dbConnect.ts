@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-require('dotenv').config();
+import { MONGODB_URI } from './constants';
 
 export default function dbConnect() {
-  return mongoose.connect(process.env.MONGODB_URI!, {
+  return mongoose.connect(MONGODB_URI as string, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useFindAndModify: false,

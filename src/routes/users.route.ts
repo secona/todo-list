@@ -1,13 +1,17 @@
 import express from 'express';
 import validateUser from '../middlewares/validateUser';
+import validateSignIn from '../middlewares/validateSignIn';
+import authenticateToken from '../middlewares/authenticateToken';
 import * as userController from '../controllers/user.controller';
 
 const router = express.Router();
 
-// TODO: login route
-router.post('/new', validateUser, userController.create);
+router.post('/register', validateUser, userController.register);
+router.post('/signin', validateSignIn, userController.signIn);
+
 router
   .route('/:id')
+  .all(authenticateToken)
   .get(userController.byId)
 
   /*Change put handlers,

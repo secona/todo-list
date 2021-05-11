@@ -54,3 +54,19 @@ export async function createUser(data: IUser) {
     .then(password => Promise.resolve(new User({ ...data, password } as IUser)))
     .catch(error => Promise.reject(error));
 }
+
+export function isCorrectPassword(email: string, password: string) {
+  return new Promise<IResult | boolean>((resolve, reject) => {
+    User.findOne({ email }, undefined, undefined, (error, data) => {
+      if (!data)
+        return resolve({
+          code: 404,
+          error: { message: `User with email ${email} not found` },
+        });
+      if (error) return reject(error);
+
+      const result = bcrypt.compareSync(password, data.password);
+      resolve(result);
+    });
+  });
+}
