@@ -5,44 +5,44 @@ import * as userServices from '../services/user.service';
 import * as authServices from '../services/auth.service';
 import { SALT_ROUNDS } from '../constants';
 
-export const byId: RequestHandler = (req, res) => {
-  const id = req.params.id;
-  userServices
-    .getById(id)
-    .then(({ code, ...json }) => res.status(code).json(json))
-    .catch(error => res.status(500).json({ error }));
+export const byId: RequestHandler = async (req, res) => {
+  try {
+    const { code, ...json } = await userServices.getById(req.params.id);
+    res.status(code).json(json);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
 export const register: RequestHandler = async (req, res) => {
-  const user = await userServices.createUser(req.body);
-  user
-    .save()
-    .then(data => res.status(201).json({ data }))
-    .catch(error => res.status(500).json({ error }));
+  try {
+    const data = await userServices.createUser(req.body);
+    res.status(201).json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
-export const signIn: RequestHandler = (req, res) => {
-  const { email, password } = req.body;
-  userServices
-    .isCorrectPassword(email, password)
-    .then(result => {
-      if (typeof result === 'boolean') {
-        if (result) {
-          const token = authServices.generateToken(
-            { email, password },
-            { expiresIn: '30d' }
-          );
-          return res.status(200).json({ data: token });
-        }
-        return res
-          .status(400)
-          .json({ error: { message: 'Password incorrect' } });
-      }
+export const signIn: RequestHandler = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await userServices.isCorrectPassword(email, password);
+    if (result === 404)
+      return res
+        .status(404)
+        .json({ error: { message: `User with email ${email} not found` } });
 
-      const { code, ...json } = result;
-      res.status(result.code).json(json);
-    })
-    .catch(error => res.status(500).json({ error }));
+    if (result) {
+      const token = authServices.generateToken(
+        { email, password },
+        { expiresIn: '30d' }
+      );
+      return res.status(200).json({ data: token });
+    }
+    return res.status(400).json({ error: { message: 'Password incorrect' } });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
 export const update: RequestHandler = async (req, res) => {
@@ -67,10 +67,11 @@ export const update: RequestHandler = async (req, res) => {
   });
 };
 
-export const remove: RequestHandler = (req, res) => {
-  const id = req.params.id;
-  userServices
-    .deleteUser(id)
-    .then(({ code, ...json }) => res.status(code).json(json))
-    .catch(error => res.status(500).json({ error }));
+export const remove: RequestHandler = async (req, res) => {
+  try {
+    const { code, ...json } = await userServices.deleteUser(req.params.id);
+    res.status(code).json(json);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
