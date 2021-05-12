@@ -1,4 +1,5 @@
 import express from 'express';
+import validateMongoId from '../validators/mongoId.validator';
 import validateUser from '../validators/user.validator';
 import validateSignIn from '../validators/signIn.validator';
 import authenticateToken from '../middlewares/authenticateToken';
@@ -11,7 +12,7 @@ router.post('/signin', validateSignIn, userController.signIn);
 
 router
   .route('/:id')
-  .all(authenticateToken)
+  .all(authenticateToken, validateMongoId)
   .get(userController.byId)
 
   /*Change put handlers,
