@@ -46,25 +46,15 @@ export const signIn: RequestHandler = async (req, res) => {
 };
 
 export const update: RequestHandler = async (req, res) => {
-  const id = req.params.id;
-  const password = await bcrypt.hash(req.body.password, SALT_ROUNDS);
-  const updatedUser: IUser = { ...req.body, password };
-  User.findByIdAndUpdate(id, updatedUser, { new: true }, (error, data) => {
-    if (!data) {
-      return res.status(404).json({
-        error: { message: `User with id ${id} not found` },
-      });
-    }
-
-    if (error) {
-      return res.status(500).json({ error });
-    }
-
-    return res.status(200).json({
-      message: `Successfully updated user with id ${id}`,
-      data,
-    });
-  });
+  try {
+    const { code, ...json } = await userServices.updateUser(
+      req.params.id,
+      req.body
+    );
+    res.status(code).json(json);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
 export const remove: RequestHandler = async (req, res) => {

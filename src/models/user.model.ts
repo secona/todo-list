@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import * as bcrypt from 'bcrypt';
+import { SALT_ROUNDS } from '../constants';
 
 export interface IUser {
   name: string;
@@ -29,5 +31,26 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+async function hashPassword(
+  this: mongoose.Document,
+  next: mongoose.HookNextFunction
+) {
+  const user = this as IUserDoc;
+  // if (!this.isModified('password')) return next();
+
+  try {
+    if (user.password) {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash(user.password, salt);
+      user.password = password;
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
+UserSchema.pre(['save', 'updateOne'], hashPassword);
 
 export default mongoose.model<IUserDoc>('User', UserSchema);

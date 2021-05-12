@@ -1,7 +1,6 @@
-import { CallbackError, LeanDocument } from 'mongoose';
+import { CallbackError, LeanDocument, UpdateQuery } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import User, { IUserDoc, IUser } from '../models/user.model';
-import { SALT_ROUNDS } from '../constants';
 
 interface IResult {
   code: number;
@@ -9,8 +8,6 @@ interface IResult {
   error?: CallbackError | { message: string };
   data?: IUserDoc | LeanDocument<IUserDoc>;
 }
-
-//TODO: service for updating user
 
 export async function getById(id: any): Promise<IResult> {
   const data = await User.findById(id).lean().exec();
@@ -20,8 +17,23 @@ export async function getById(id: any): Promise<IResult> {
 }
 
 export async function createUser(data: IUser) {
-  const password = await bcrypt.hash(data.password, SALT_ROUNDS);
-  return User.create({ ...data, password } as IUser);
+  const user = new User(data);
+  return user.save();
+}
+
+export async function updateUser(
+  id: any,
+  update: UpdateQuery<IUserDoc>
+): Promise<IResult> {
+  try {
+    const data = await User.updateOne({ _id: id }, update, { new: true });
+    return !data
+      ? { code: 404, error: { message: `User with id ${id} not found` } }
+      : { code: 200, message: `User with id ${id} successfully updated` };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 export async function deleteUser(id: any): Promise<IResult> {
