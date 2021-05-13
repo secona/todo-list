@@ -1,17 +1,8 @@
-import { body, CustomValidator } from 'express-validator';
+import { body } from 'express-validator';
 import createValidator from './createValidator';
-import User from '../models/user.model';
+import { isEmailAvailable } from '../services/user.service';
 
-const isEmailAvailable: CustomValidator = (email, { req }) => {
-  return User.findOne({ email }).then(data => {
-    const id = req.params?.id || '';
-    if (data && data._id.toString() !== id) {
-      return Promise.reject('Email already in use');
-    }
-  });
-};
-
-const validateUser = createValidator(
+export const validators = [
   body('name', 'Invalid Name')
     .isString()
     .bail()
@@ -20,13 +11,15 @@ const validateUser = createValidator(
   body('email', 'Invalid email')
     .isEmail()
     .bail()
-    .custom(isEmailAvailable)
+    .custom((email, { req }) => isEmailAvailable(email, req.params?.id))
     .withMessage('Email is already in use'),
   body('password', 'Invalid password')
     .isString()
     .bail()
     .isLength({ min: 8 })
-    .withMessage('Password must be 8 characters or more')
-);
+    .withMessage('Password must be 8 characters or more'),
+];
+
+const validateUser = createValidator(...validators);
 
 export default validateUser;

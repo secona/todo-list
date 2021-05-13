@@ -2,6 +2,7 @@ import express from 'express';
 import validateMongoId from '../validators/mongoId.validator';
 import validateUser from '../validators/user.validator';
 import validateSignIn from '../validators/signIn.validator';
+import validateUpdateUser from '../validators/updateUser.validator';
 import authenticateToken from '../middlewares/authenticateToken';
 import * as userController from '../controllers/user.controller';
 
@@ -14,11 +15,7 @@ router
   .route('/:id')
   .all(authenticateToken, validateMongoId)
   .get(userController.byId)
-
-  /*Change put handlers,
-    I don't like how you have to put in every single value to update
-    make it so it's only the values that you want to updat*/
-  .put(validateUser, userController.update)
+  .put(validateUpdateUser, userController.update)
   .delete(userController.remove);
 
 export default router;

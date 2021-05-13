@@ -25,22 +25,17 @@ export async function updateUser(
   id: any,
   update: UpdateQuery<IUserDoc>
 ): Promise<IResult> {
-  try {
-    const data = await User.updateOne({ _id: id }, update, { new: true });
-    return !data
-      ? { code: 404, error: { message: `User with id ${id} not found` } }
-      : { code: 200, message: `User with id ${id} successfully updated` };
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const data = await User.updateOne({ _id: id }, update, { new: true }).exec();
+  return !data
+    ? { code: 404, error: { message: `User with id ${id} not found` } }
+    : { code: 200, message: `User with id ${id} successfully updated` };
 }
 
 export async function deleteUser(id: any): Promise<IResult> {
   const data = await User.findByIdAndRemove(id).exec();
   return !data
     ? { code: 404, error: { message: `User with id ${id} not found` } }
-    : { code: 204, message: `User with id ${id} successfully deleted` };
+    : { code: 200, message: `User with id ${id} successfully deleted` };
 }
 
 export async function isCorrectPassword(
@@ -53,4 +48,16 @@ export async function isCorrectPassword(
   const compareWith = data.password;
   const result = await bcrypt.compare(password, compareWith);
   return result;
+}
+
+/**
+ * Won't throw an error if the provided email is the
+ * same as the email associated with the provided id
+ */
+export function isEmailAvailable(email: string, id?: any) {
+  return User.findOne({ email }).then(data => {
+    if (data && data._id.toString() !== id) {
+      return Promise.reject('Email is already in use');
+    }
+  });
 }

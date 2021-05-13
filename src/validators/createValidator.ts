@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { validationResult } from 'express-validator';
+import { validationResult, ValidationChain } from 'express-validator';
 
 export default function createValidator(
-  ...validators: RequestHandler[]
+  ...validators: ValidationChain[]
 ): RequestHandler[] {
   return [
     ...validators,
