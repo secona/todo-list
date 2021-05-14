@@ -10,8 +10,10 @@ const authenticateToken: RequestHandler = (req, res, next) => {
       error: { message: 'You are unauthorized' },
     });
 
-  authServices.verifyToken(token, undefined, (error, data) => {
-    if (error)
+  authServices.verifyUserToken(token, (error, data) => {
+    // console.log(data);
+    // @ts-ignore
+    if (error || data?.id !== req.params.id)
       return res.status(403).json({
         error: { message: "You don't have access" },
       });

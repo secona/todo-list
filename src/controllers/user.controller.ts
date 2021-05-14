@@ -30,11 +30,12 @@ const userController = {
           .status(404)
           .json({ error: { message: `User with email ${email} not found` } });
 
-      if (result) {
-        const token = authServices.generateToken(
-          { email, password },
-          { expiresIn: '30d' }
-        );
+      if (result[0]) {
+        const token = authServices.generateUserToken({
+          id: result[1]._id,
+          email,
+          password,
+        });
         return res.status(200).json({ data: token });
       }
       return res.status(400).json({ error: { message: 'Password incorrect' } });

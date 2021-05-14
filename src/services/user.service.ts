@@ -9,6 +9,7 @@ interface IResult {
   data?: IUserDoc | LeanDocument<IUserDoc>;
 }
 
+// TODO: improve return type
 const userServices = {
   async getById(id: any): Promise<IResult> {
     const data = await User.findById(id).lean().exec();
@@ -43,13 +44,13 @@ const userServices = {
   async isCorrectPassword(
     email: string,
     password: string
-  ): Promise<404 | boolean> {
-    const data = await User.findOne({ email });
+  ): Promise<404 | [boolean, LeanDocument<IUserDoc>]> {
+    const data = await User.findOne({ email }).lean().exec();
     if (!data) return 404;
 
     const compareWith = data.password;
     const result = await bcrypt.compare(password, compareWith);
-    return result;
+    return [result, data];
   },
 
   /**
