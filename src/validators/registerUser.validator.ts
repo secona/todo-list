@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import createValidator from './createValidator';
-import { isEmailAvailable } from '../services/user.service';
+import userServices from '../services/user.service';
 
 export const validators = [
   body('name', 'Invalid Name')
@@ -11,7 +11,9 @@ export const validators = [
   body('email', 'Invalid email')
     .isEmail()
     .bail()
-    .custom((email, { req }) => isEmailAvailable(email, req.params?.id))
+    .custom((email, { req }) =>
+      userServices.isEmailAvailable(email, req.params?.id)
+    )
     .withMessage('Email is already in use'),
   body('password', 'Invalid password')
     .isString()

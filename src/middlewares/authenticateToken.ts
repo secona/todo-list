@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import * as authServices from '../services/auth.service';
+import authServices from '../services/auth.service';
 
 const authenticateToken: RequestHandler = (req, res, next) => {
   const authHeader = req.headers.authorization;

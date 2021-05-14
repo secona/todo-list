@@ -1,10 +1,10 @@
 import express from 'express';
 import validateMongoId from '../validators/mongoId.validator';
-import validateUser from '../validators/user.validator';
+import validateUser from '../validators/registerUser.validator';
 import validateSignIn from '../validators/signIn.validator';
 import validateUpdateUser from '../validators/updateUser.validator';
 import authenticateToken from '../middlewares/authenticateToken';
-import * as userController from '../controllers/user.controller';
+import userController from '../controllers/user.controller';
 
 const router = express.Router();
 
