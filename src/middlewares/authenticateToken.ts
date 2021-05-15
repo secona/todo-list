@@ -1,22 +1,41 @@
 import { RequestHandler } from 'express';
+import * as bcrypt from 'bcrypt';
 import authServices from '../services/auth.service';
+import userServices from '../services/user.service';
 
 const authenticateToken: RequestHandler = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (!token)
+  if (!token) {
     return res.status(401).json({
-      error: { message: 'You are unauthorized' },
+      error: { message: 'Bearer token required' },
     });
+  }
 
-  authServices.verifyUserToken(token, (error, data) => {
-    // console.log(data);
-    // @ts-ignore
-    if (error || data?.id !== req.params.id)
+  authServices.verifyUserToken(token, async (error, decoded) => {
+    if (error || !decoded) {
+      return res.status(401).json({ error: { message: 'Invalid token' } });
+    }
+
+    const { data: user } = await userServices.getById(decoded?.id);
+    if (!user) {
       return res.status(403).json({
-        error: { message: "You don't have access" },
+        error: {
+          message: 'Invalid token. User recently deleted their account',
+        },
       });
+    }
+
+    const passwordValid = await bcrypt.compare(decoded.password, user.password);
+    if (!passwordValid || user.email !== decoded.email) {
+      return res.status(403).json({
+        error: {
+          message:
+            'Outdated token. User recently changed their password or email',
+        },
+      });
+    }
 
     return next();
   });
