@@ -1,4 +1,4 @@
-import { CallbackError, LeanDocument, UpdateQuery } from 'mongoose';
+import { CallbackError, LeanDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import User, { IUserDoc, IUser } from '../models/user.model';
 
@@ -23,15 +23,15 @@ const userServices = {
     return user.save();
   },
 
-  // FIXME: updateUser not hashing password
-  // TODO: updateUser should return updated data
-  async updateUser(id: any, update: UpdateQuery<IUserDoc>): Promise<IResult> {
-    const data = await User.updateOne({ _id: id }, update, {
-      new: true,
-    }).exec();
-    return !data
-      ? { code: 404, error: { message: `User with id ${id} not found` } }
-      : { code: 200, message: `User with id ${id} successfully updated` };
+  async updateUser(id: any, update: Partial<IUser>): Promise<IResult> {
+    const data = await User.findById(id).exec();
+    if (!data)
+      return { code: 404, error: { message: `User with id ${id} not found` } };
+
+    Object.assign(data, update);
+
+    const saved = await data.save();
+    return { code: 200, data: saved };
   },
 
   async deleteUser(id: any): Promise<IResult> {

@@ -37,7 +37,7 @@ async function hashPassword(
   next: mongoose.HookNextFunction
 ) {
   const user = this as IUserDoc;
-  // if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return next();
 
   try {
     if (user.password) {
@@ -51,6 +51,6 @@ async function hashPassword(
   }
 }
 
-UserSchema.pre(['save', 'updateOne'], hashPassword);
+UserSchema.pre('save', hashPassword);
 
 export default mongoose.model<IUserDoc>('User', UserSchema);
