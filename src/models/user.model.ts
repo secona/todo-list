@@ -32,25 +32,22 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-async function hashPassword(
-  this: mongoose.Document,
-  next: mongoose.HookNextFunction
-) {
-  const user = this as IUserDoc;
-  if (!this.isModified('password')) return next();
+UserSchema.pre(
+  'save',
+  async function (this: mongoose.Document, next: mongoose.HookNextFunction) {
+    const user = this as IUserDoc;
+    if (!this.isModified('password')) return next();
 
-  try {
-    if (user.password) {
-      const salt = await bcrypt.genSalt(10);
-      const password = await bcrypt.hash(user.password, salt);
-      user.password = password;
+    try {
+      if (user.password) {
+        const password = await bcrypt.hash(user.password, SALT_ROUNDS);
+        user.password = password;
+      }
+      return next();
+    } catch (error) {
+      return next(error);
     }
-    return next();
-  } catch (error) {
-    return next(error);
   }
-}
-
-UserSchema.pre('save', hashPassword);
+);
 
 export default mongoose.model<IUserDoc>('User', UserSchema);
