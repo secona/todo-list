@@ -13,7 +13,7 @@ router.post('/signin', validateSignIn, userController.signIn);
 
 router
   .route('/:id')
-  .all(authenticateToken, validateMongoId)
+  .all(validateMongoId, authenticateToken)
   .get(userController.byId)
   .put(validateUpdateUser, userController.update)
   .delete(userController.remove);

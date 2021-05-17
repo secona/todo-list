@@ -10,6 +10,7 @@ router.post('/:id/new', validateMongoId, validateTodoBody, todoController.new);
 
 router
   .route('/:id/:todoId')
+  .all(validateMongoId)
   .get(todoController.getById)
   // TODO: PUT validator
   .put(todoController.updateById)
