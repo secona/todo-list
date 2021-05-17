@@ -33,7 +33,9 @@ const userController = {
       if (result) return res.status(200).json({ data: result });
 
       if (result === false) {
-        res.status(401).json({ error: { message: `Password Incorrect` } });
+        return res.status(401).json({
+          error: { message: `Password Incorrect` },
+        });
       }
 
       res.status(404).json({
