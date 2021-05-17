@@ -6,7 +6,7 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
-  todos?: mongoose.Schema.Types.ObjectId[];
+  todos: mongoose.Schema.Types.ObjectId[];
 }
 
 export interface IUserDoc extends IUser, mongoose.Document {}

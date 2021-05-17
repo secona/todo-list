@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
 export interface ITodo {
+  owner: mongoose.Schema.Types.ObjectId;
   title: string;
   description?: string;
 }
 
 interface ITodoDoc extends ITodo, mongoose.Document {}
 
-// TODO: service and controller for todos
 const TodoSchema = new mongoose.Schema(
   {
     owner: {
