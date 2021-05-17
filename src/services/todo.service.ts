@@ -8,14 +8,13 @@ const todoServices = {
   },
 
   async newTodo(userId: any, body: ITodo) {
-    const user = await User.findById(userId);
+    const newTodo = new Todo({ ...body, owner: userId } as ITodo);
+    const user = await User.findByIdAndUpdate(userId, {
+      $push: { todos: newTodo._id },
+    });
+
     if (!user) return null;
-
-    const todo = await new Todo({ ...body, owner: userId } as ITodo).save();
-    user.todos.push(todo._id);
-    user.save();
-
-    return todo;
+    return await newTodo.save();
   },
 
   async getTodoById(todoId: any, userId: string) {
@@ -34,10 +33,10 @@ const todoServices = {
   },
 
   async deleteTodoById(todoId: any, userId: string) {
-    const todo = await Todo.findById(todoId).exec();
+    const todo = await Todo.findByIdAndRemove(todoId).exec();
     if (!todo || todo.owner.toString() !== userId) return null;
 
-    await todo.delete();
+    await User.findByIdAndUpdate(userId, { $pull: { todos: todoId } });
     return true; // delete success!
   },
 };
