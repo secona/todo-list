@@ -1,6 +1,4 @@
-import mongoose, { Types } from 'mongoose';
-import * as bcrypt from 'bcrypt';
-import { SALT_ROUNDS } from '../constants';
+import mongoose from 'mongoose';
 
 export interface IUser {
   name: string;
@@ -35,24 +33,6 @@ const UserSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
-);
-
-UserSchema.pre(
-  'save',
-  async function (this: mongoose.Document, next: mongoose.HookNextFunction) {
-    const user = this as IUserDoc;
-    if (!this.isModified('password')) return next();
-
-    try {
-      if (user.password) {
-        const password = await bcrypt.hash(user.password, SALT_ROUNDS);
-        user.password = password;
-      }
-      return next();
-    } catch (error) {
-      return next(error);
-    }
   }
 );
 

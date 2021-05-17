@@ -1,56 +1,52 @@
-import { CallbackError, LeanDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import User, { IUserDoc, IUser } from '../models/user.model';
+import authServices from './auth.service';
+import User, { IUser } from '../models/user.model';
+import Todo from '../models/todo.model';
+import { SALT_ROUNDS } from '../constants';
 
-interface IResult {
-  code: number;
-  message?: string;
-  error?: CallbackError | { message: string };
-  data?: IUserDoc | LeanDocument<IUserDoc>;
-}
-
-// TODO: improve return type
 const userServices = {
-  async getById(id: any): Promise<IResult> {
+  async getById(id: any) {
     const data = await User.findById(id).lean().exec();
-    return !data
-      ? { code: 404, error: { message: `User with id ${id} not found` } }
-      : { code: 200, data };
+    return data;
   },
 
   async createUser(data: IUser) {
+    data.password = await bcrypt.hash(data.password, SALT_ROUNDS);
     const user = new User(data);
     return user.save();
   },
 
-  async updateUser(id: any, update: Partial<IUser>): Promise<IResult> {
-    const data = await User.findById(id).exec();
-    if (!data)
-      return { code: 404, error: { message: `User with id ${id} not found` } };
-
-    Object.assign(data, update);
-
-    const saved = await data.save();
-    return { code: 200, data: saved };
+  async updateUser(id: any, update: Partial<IUser>) {
+    if (update.password) {
+      update.password = await bcrypt.hash(update.password, SALT_ROUNDS);
+    }
+    const data = await User.findByIdAndUpdate(id, update, { new: true })
+      .lean()
+      .exec();
+    return data;
   },
 
-  async deleteUser(id: any): Promise<IResult> {
+  async deleteUser(id: any) {
     const data = await User.findByIdAndRemove(id).exec();
-    return !data
-      ? { code: 404, error: { message: `User with id ${id} not found` } }
-      : { code: 200, message: `User with id ${id} successfully deleted` };
+    if (!data) return null;
+
+    await Todo.deleteMany({ owner: id }).exec();
+    return data;
   },
 
-  async isCorrectPassword(
-    email: string,
-    password: string
-  ): Promise<404 | [boolean, LeanDocument<IUserDoc>]> {
+  async generateToken(email: string, password: string) {
     const data = await User.findOne({ email }).lean().exec();
-    if (!data) return 404;
+    if (!data) return null; // 404 - email not found
 
-    const compareWith = data.password;
-    const result = await bcrypt.compare(password, compareWith);
-    return [result, data];
+    const result = await bcrypt.compare(password, data.password);
+    if (!result) return false; // 401 - incorrect password
+
+    const token = authServices.generateUserToken({
+      id: data._id,
+      email,
+      password,
+    });
+    return token;
   },
 
   /**

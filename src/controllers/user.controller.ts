@@ -1,12 +1,16 @@
 import { RequestHandler } from 'express';
 import userServices from '../services/user.service';
-import authServices from '../services/auth.service';
 
 const userController = {
   byId: <RequestHandler>(async (req, res) => {
     try {
-      const { code, ...json } = await userServices.getById(req.params.id);
-      res.status(code).json(json);
+      const id = req.params.id;
+      const data = await userServices.getById(id);
+
+      if (data) return res.status(200).json({ data });
+      return res.status(404).json({
+        error: { message: `User with id "${id}" not found` },
+      });
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -24,21 +28,17 @@ const userController = {
   signIn: <RequestHandler>(async (req, res) => {
     try {
       const { email, password } = req.body;
-      const result = await userServices.isCorrectPassword(email, password);
-      if (result === 404)
-        return res
-          .status(404)
-          .json({ error: { message: `User with email ${email} not found` } });
+      const result = await userServices.generateToken(email, password);
 
-      if (result[0]) {
-        const token = authServices.generateUserToken({
-          id: result[1]._id,
-          email,
-          password,
-        });
-        return res.status(200).json({ data: token });
+      if (result) return res.status(200).json({ data: result });
+
+      if (result === false) {
+        res.status(401).json({ error: { message: `Password Incorrect` } });
       }
-      return res.status(400).json({ error: { message: 'Password incorrect' } });
+
+      res.status(404).json({
+        error: { message: `User with email "${email}" not found` },
+      });
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -46,11 +46,19 @@ const userController = {
 
   update: <RequestHandler>(async (req, res) => {
     try {
-      const { code, ...json } = await userServices.updateUser(
-        req.params.id,
-        req.body
-      );
-      res.status(code).json(json);
+      const id = req.params.id;
+      const data = await userServices.updateUser(id, req.body);
+
+      if (!data) {
+        return res.status(404).json({
+          error: { message: `User with id "${id}" not found` },
+        });
+      }
+
+      return res.status(200).json({
+        message: `Successfully updated user with id "${id}"`,
+        data,
+      });
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -58,8 +66,18 @@ const userController = {
 
   remove: <RequestHandler>(async (req, res) => {
     try {
-      const { code, ...json } = await userServices.deleteUser(req.params.id);
-      res.status(code).json(json);
+      const id = req.params.id;
+      const data = await userServices.deleteUser(id);
+
+      if (!data) {
+        return res.status(404).json({
+          error: { message: `User with id "${id}" not found` },
+        });
+      }
+
+      return res.status(200).json({
+        message: `Successfully deleted user with id "${id}"`,
+      });
     } catch (error) {
       res.status(500).json({ error });
     }

@@ -19,14 +19,12 @@ const authenticateToken: RequestHandler = (req, res, next) => {
     }
 
     if (decoded.id !== req.params.id) {
-      return res
-        .status(403)
-        .json({
-          error: { message: 'Invalid token. Token id does not match param id' },
-        });
+      return res.status(403).json({
+        error: { message: 'Invalid token. Token id does not match param id' },
+      });
     }
 
-    const { data: user } = await userServices.getById(decoded?.id);
+    const user = await userServices.getById(decoded?.id);
     if (!user) {
       return res.status(403).json({
         error: {
