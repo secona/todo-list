@@ -18,21 +18,27 @@ const todoServices = {
     return todo;
   },
 
-  async getTodoById(todoId: any) {
-    const todo = Todo.findById(todoId).lean().exec();
+  async getTodoById(todoId: any, userId: string) {
+    const todo = await Todo.findById(todoId).lean().exec();
+    if (!todo || todo.owner.toString() !== userId) return null;
     return todo;
   },
 
-  async updateTodoById(todoId: any, body: ITodo) {
-    const todo = await Todo.findByIdAndUpdate(todoId, body, { new: true })
-      .lean()
-      .exec();
-    return todo;
+  async updateTodoById(todoId: any, userId: string, body: Partial<ITodo>) {
+    const todo = await Todo.findById(todoId).exec();
+    if (!todo || todo.owner.toString() !== userId) return null;
+
+    Object.assign(todo, body);
+    const updated = await todo.save();
+    return updated;
   },
 
-  async deleteTodoById(todoId: any) {
-    const data = await Todo.findByIdAndRemove(todoId);
-    return data;
+  async deleteTodoById(todoId: any, userId: string) {
+    const todo = await Todo.findById(todoId).exec();
+    if (!todo || todo.owner.toString() !== userId) return null;
+
+    await todo.delete();
+    return true; // delete success!
   },
 };
 

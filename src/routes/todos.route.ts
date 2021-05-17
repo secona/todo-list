@@ -8,7 +8,6 @@ const router = express.Router();
 router.get('/:id/all', validateMongoId, todoController.all);
 router.post('/:id/new', validateMongoId, validateTodoBody, todoController.new);
 
-// TODO: authenticate user id with todo's owner id
 router
   .route('/:id/:todoId')
   .get(todoController.getById)
