@@ -5,7 +5,7 @@ const userController = {
   byId: <RequestHandler>(async (req, res) => {
     try {
       const id = req.params.id;
-      const data = await userServices.getById(id);
+      const data = await userServices.getById(id, !!req.query.complete);
 
       if (data) return res.status(200).json({ data });
       return res.status(404).json({

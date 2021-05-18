@@ -5,9 +5,13 @@ import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 
 const userServices = {
-  async getById(id: any) {
-    const data = await User.findById(id).lean().exec();
-    return data;
+  /**
+   * @param complete if true, it will populate the `todos` field
+   */
+  async getById(id: any, complete?: boolean) {
+    let query = User.findById(id).lean();
+    if (complete) query = query.populate('todos');
+    return query.exec();
   },
 
   async createUser(data: IUser) {
@@ -41,11 +45,8 @@ const userServices = {
     const result = await bcrypt.compare(password, data.password);
     if (!result) return false; // 401 - incorrect password
 
-    const token = authServices.generateUserToken({
-      id: data._id,
-      email,
-      password,
-    });
+    const id = data._id;
+    const token = authServices.generateUserToken({ id, email, password });
     return token;
   },
 
