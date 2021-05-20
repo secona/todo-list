@@ -4,6 +4,7 @@ import User, { IUser } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 
+// TODO: prevent user from setting unwanted fields such as `todos`
 const userServices = {
   /**
    * @param complete if true, it will populate the `todos` field

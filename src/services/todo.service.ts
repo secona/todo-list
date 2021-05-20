@@ -1,6 +1,7 @@
 import Todo, { ITodo } from '../models/todo.model';
 import User from '../models/user.model';
 
+// TODO: prevent user from setting unwanted fields such as `owner`
 const todoServices = {
   async getAllUserTodos(userId: any) {
     const todos = await Todo.find({ owner: userId }).lean().exec();
