@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
-import userAuthServices from '../services/userAuth.service';
+import tokenServices from '../services/token.service';
 import userServices from '../services/user.service';
+import verificationServices from '../services/verification.service';
 
 const userController = {
   byId: <RequestHandler>(async (req, res) => {
@@ -20,6 +21,7 @@ const userController = {
   register: <RequestHandler>(async (req, res) => {
     try {
       const data = await userServices.createUser(req.body);
+      verificationServices.generateTokenAndSend(data.email, data.id);
       res.status(201).json({ data });
     } catch (error) {
       res.status(500).json({ error });
@@ -29,7 +31,7 @@ const userController = {
   signIn: <RequestHandler>(async (req, res) => {
     try {
       const { email, password } = req.body;
-      const result = await userAuthServices.generateUserToken(email, password);
+      const result = await tokenServices.generateUserToken(email, password);
 
       if (result) return res.status(200).json({ data: result });
 

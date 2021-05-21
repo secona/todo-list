@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import authServices from './userAuth.service';
+import authServices from './token.service';
 import User, { IUser } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';

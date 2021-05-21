@@ -9,7 +9,12 @@ interface UserToken {
   password: string;
 }
 
-const userAuthServices = {
+interface EmailVerificationToken {
+  id: string;
+  email: string;
+}
+
+const tokenServices = {
   async generateUserToken(email: string, password: string) {
     const user = await User.findOne({ email }).lean().exec();
     if (!user) return null; // 404 - not found
@@ -30,6 +35,22 @@ const userAuthServices = {
       cb(error, <UserToken | undefined>decoded);
     });
   },
+
+  generateEmailVerificationToken(payload: EmailVerificationToken) {
+    return jwt.sign(payload, JWT_KEY, { expiresIn: '1d' });
+  },
+
+  verifyEmailVerificationToken(
+    token: string,
+    cb: (
+      err: jwt.VerifyErrors | null,
+      decoded: EmailVerificationToken | undefined
+    ) => void
+  ) {
+    jwt.verify(token, JWT_KEY, undefined, (error, decoded) => {
+      cb(error, <EmailVerificationToken | undefined>decoded);
+    });
+  },
 };
 
-export default userAuthServices;
+export default tokenServices;

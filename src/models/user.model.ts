@@ -5,6 +5,7 @@ export interface IUser {
   email: string;
   password: string;
   todos: mongoose.Schema.Types.ObjectId[];
+  verified: boolean;
 }
 
 export interface IUserDoc extends IUser, mongoose.Document {}
@@ -23,6 +24,11 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     todos: [
       {
