@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import userAuthServices from '../services/userAuth.service';
 import userServices from '../services/user.service';
 
 const userController = {
@@ -28,7 +29,7 @@ const userController = {
   signIn: <RequestHandler>(async (req, res) => {
     try {
       const { email, password } = req.body;
-      const result = await userServices.generateToken(email, password);
+      const result = await userAuthServices.generateUserToken(email, password);
 
       if (result) return res.status(200).json({ data: result });
 

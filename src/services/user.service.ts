@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import authServices from './auth.service';
+import authServices from './userAuth.service';
 import User, { IUser } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
@@ -37,18 +37,6 @@ const userServices = {
 
     await Todo.deleteMany({ owner: id }).exec();
     return data;
-  },
-
-  async generateToken(email: string, password: string) {
-    const data = await User.findOne({ email }).lean().exec();
-    if (!data) return null; // 404 - email not found
-
-    const result = await bcrypt.compare(password, data.password);
-    if (!result) return false; // 401 - incorrect password
-
-    const id = data._id;
-    const token = authServices.generateUserToken({ id, email, password });
-    return token;
   },
 
   /**

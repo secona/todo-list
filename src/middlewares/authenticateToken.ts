@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import * as bcrypt from 'bcrypt';
-import authServices from '../services/auth.service';
+import authServices from '../services/userAuth.service';
 import userServices from '../services/user.service';
 
 const authenticateToken: RequestHandler = (req, res, next) => {
