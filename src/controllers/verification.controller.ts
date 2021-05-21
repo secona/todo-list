@@ -2,19 +2,27 @@ import { RequestHandler } from 'express';
 import User from '../models/user.model';
 import verificationServices from '../services/verification.service';
 import tokenServices from '../services/token.service';
-import userServices from '../services/user.service';
 
 const verificationController = {
-  sendEmail: <RequestHandler>(async (req, res) => {
+  resendVerification: <RequestHandler>(async (req, res) => {
     try {
-      const id = req.params.id;
-      const data = await userServices.getById(id);
+      const email = req.query.email as string;
+      const data = await User.findOne({ email }).lean().exec();
+
       if (!data)
         return res.status(404).json({
-          error: { message: `User with id "${id}" not found` },
+          error: { message: `User with email "${email}" not found` },
         });
 
-      verificationServices.generateTokenAndSend(data.email, id);
+      if (data.verified)
+        return res.status(400).json({
+          error: { message: `User with email "${email}" already verified` },
+        });
+
+      verificationServices.generateTokenAndSend(data.email, data._id);
+      res.status(200).json({
+        message: `Successfully sent verification email to "${email}"`,
+      });
     } catch (error) {
       res.status(500).json({ error });
     }

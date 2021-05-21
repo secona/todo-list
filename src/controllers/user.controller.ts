@@ -3,6 +3,7 @@ import tokenServices from '../services/token.service';
 import userServices from '../services/user.service';
 import verificationServices from '../services/verification.service';
 
+// TODO: prevent any changes if email is unverified
 const userController = {
   byId: <RequestHandler>(async (req, res) => {
     try {
