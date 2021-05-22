@@ -10,11 +10,7 @@ const todoServices = {
 
   async newTodo(userId: any, body: ITodo) {
     const newTodo = new Todo({ ...body, owner: userId } as ITodo);
-    const user = await User.findByIdAndUpdate(userId, {
-      $push: { todos: newTodo._id },
-    });
-
-    if (!user) return null;
+    await User.updateOne({ id: userId }, { $push: { todos: newTodo._id } });
     return await newTodo.save();
   },
 
@@ -29,15 +25,14 @@ const todoServices = {
     if (!todo || todo.owner.toString() !== userId) return null;
 
     Object.assign(todo, body);
-    const updated = await todo.save();
-    return updated;
+    return await todo.save();
   },
 
   async deleteTodoById(todoId: any, userId: string) {
     const todo = await Todo.findByIdAndRemove(todoId).exec();
     if (!todo || todo.owner.toString() !== userId) return null;
 
-    await User.findByIdAndUpdate(userId, { $pull: { todos: todoId } });
+    await User.updateOne({ id: userId }, { $pull: { todos: todoId } });
     return true; // delete success!
   },
 };

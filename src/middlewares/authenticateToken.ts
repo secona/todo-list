@@ -24,17 +24,10 @@ const authenticateToken: RequestHandler = (req, res, next) => {
       });
     }
 
-    const user = await userServices.getById(decoded?.id);
-    if (!user) {
-      return res.status(403).json({
-        error: {
-          message: 'Invalid token. User recently deleted their account',
-        },
-      });
-    }
-
-    const passwordValid = await bcrypt.compare(decoded.password, user.password);
-    if (!passwordValid || user.email !== decoded.email) {
+    // req.user will not be empty since before this middleware, wer are checking
+    // if user with id exists
+    const passwordValid = await bcrypt.compare(decoded.password, req.user!.password);
+    if (!passwordValid || req.user?.email !== decoded.email) {
       return res.status(403).json({
         error: {
           message:

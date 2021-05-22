@@ -2,18 +2,16 @@ import { RequestHandler } from 'express';
 import tokenServices from '../services/token.service';
 import userServices from '../services/user.service';
 import verificationServices from '../services/verification.service';
+import toBoolean from '../utils/toBoolean';
 
 // TODO: prevent any changes if email is unverified
 const userController = {
   byId: <RequestHandler>(async (req, res) => {
     try {
       const id = req.params.id;
-      const data = await userServices.getById(id, !!req.query.complete);
-
-      if (data) return res.status(200).json({ data });
-      return res.status(404).json({
-        error: { message: `User with id "${id}" not found` },
-      });
+      const complete = toBoolean(req.query.complete as string);
+      const data = await userServices.getById(id, complete);
+      return res.status(200).json({ data });
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -53,13 +51,7 @@ const userController = {
   update: <RequestHandler>(async (req, res) => {
     try {
       const id = req.params.id;
-      const data = await userServices.updateUser(id, req.body);
-
-      if (!data) {
-        return res.status(404).json({
-          error: { message: `User with id "${id}" not found` },
-        });
-      }
+      const data = await userServices.updateUser(id, req.user!, req.body);
 
       return res.status(200).json({
         message: `Successfully updated user with id "${id}"`,
@@ -74,12 +66,6 @@ const userController = {
     try {
       const id = req.params.id;
       const data = await userServices.deleteUser(id);
-
-      if (!data) {
-        return res.status(404).json({
-          error: { message: `User with id "${id}" not found` },
-        });
-      }
 
       return res.status(200).json({
         message: `Successfully deleted user with id "${id}"`,

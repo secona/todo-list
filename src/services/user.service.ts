@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
-import User, { IUser } from '../models/user.model';
+import { LeanDocument } from 'mongoose';
+import User, { IUser, IUserDoc } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 
@@ -11,7 +12,11 @@ const userServices = {
   async getById(id: any, complete?: boolean) {
     let query = User.findById(id).lean();
     if (complete) query = query.populate('todos');
-    return query.exec();
+    const data = await query.exec();
+
+    if (!data) return 'not-found';
+    if (!data.verified) return 'not-verified';
+    return data;
   },
 
   async createUser(data: IUser) {
@@ -20,11 +25,12 @@ const userServices = {
     return user.save();
   },
 
-  async updateUser(id: any, update: Partial<IUser>) {
-    const result = await this.getById(id);
-    if (!result) return null;
-
-    update.verified = !update.email || result.email === update.email;
+  async updateUser(
+    id: any,
+    user: LeanDocument<IUserDoc>,
+    update: Partial<IUser>
+  ) {
+    update.verified = !update.email || user.email === update.email;
     if (update.password) {
       update.password = await bcrypt.hash(update.password, SALT_ROUNDS);
     }
@@ -36,11 +42,9 @@ const userServices = {
   },
 
   async deleteUser(id: any) {
-    const data = await User.findByIdAndRemove(id).exec();
-    if (!data) return null;
-
+    await User.deleteOne({ id }).exec();
     await Todo.deleteMany({ owner: id }).exec();
-    return data;
+    return true; //success!
   },
 
   /**
