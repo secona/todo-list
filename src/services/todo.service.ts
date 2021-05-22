@@ -29,9 +29,10 @@ const todoServices = {
   },
 
   async deleteTodoById(todoId: any, userId: string) {
-    const todo = await Todo.findByIdAndRemove(todoId).exec();
+    const todo = await Todo.findById(todoId).exec();
     if (!todo || todo.owner.toString() !== userId) return null;
 
+    await todo.delete().exec();
     await User.updateOne({ id: userId }, { $pull: { todos: todoId } });
     return true; // delete success!
   },

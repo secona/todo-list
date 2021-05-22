@@ -4,7 +4,6 @@ import userServices from '../services/user.service';
 import verificationServices from '../services/verification.service';
 import toBoolean from '../utils/toBoolean';
 
-// TODO: prevent any changes if email is unverified
 const userController = {
   byId: <RequestHandler>(async (req, res) => {
     try {
@@ -31,15 +30,13 @@ const userController = {
     try {
       const { email, password } = req.body;
       const result = await tokenServices.generateUserToken(email, password);
-
-      if (result) return res.status(200).json({ data: result });
-
-      if (result === false) {
+      // TODO: clean this
+      if (typeof result === 'string')
+        return res.status(200).json({ data: result });
+      if (result === false)
         return res.status(401).json({
           error: { message: `Password Incorrect` },
         });
-      }
-
       res.status(404).json({
         error: { message: `User with email "${email}" not found` },
       });
@@ -65,7 +62,7 @@ const userController = {
   remove: <RequestHandler>(async (req, res) => {
     try {
       const id = req.params.id;
-      const data = await userServices.deleteUser(id);
+      await userServices.deleteUser(id);
 
       return res.status(200).json({
         message: `Successfully deleted user with id "${id}"`,

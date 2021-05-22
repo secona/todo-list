@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import Mail from 'nodemailer/lib/mailer';
+import { Options } from 'nodemailer/lib/mailer';
 import { EMAIL_ADDRESS, EMAIL_PASSWORD, EMAIL_NAME } from '../constants';
 
 const emailServices = {
@@ -10,7 +10,7 @@ const emailServices = {
     auth: { user: EMAIL_ADDRESS, pass: EMAIL_PASSWORD },
   }),
 
-  async sendMail(options: Mail.Options) {
+  async sendMail(options: Options) {
     await this.transporter.sendMail({ ...options, from: this.from });
   },
 

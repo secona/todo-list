@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 import * as bcrypt from 'bcrypt';
 import authServices from '../services/token.service';
-import userServices from '../services/user.service';
 
 const authenticateToken: RequestHandler = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -26,7 +25,10 @@ const authenticateToken: RequestHandler = (req, res, next) => {
 
     // req.user will not be empty since before this middleware, wer are checking
     // if user with id exists
-    const passwordValid = await bcrypt.compare(decoded.password, req.user!.password);
+    const passwordValid = await bcrypt.compare(
+      decoded.password,
+      req.user!.password
+    );
     if (!passwordValid || req.user?.email !== decoded.email) {
       return res.status(403).json({
         error: {

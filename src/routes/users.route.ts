@@ -1,5 +1,4 @@
 import express from 'express';
-import authenticateToken from '../middlewares/authenticateToken';
 import userValidator from '../validators/user.validator';
 import userController from '../controllers/user.controller';
 
