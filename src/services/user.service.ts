@@ -1,5 +1,4 @@
 import * as bcrypt from 'bcrypt';
-import authServices from './token.service';
 import User, { IUser } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
@@ -22,9 +21,14 @@ const userServices = {
   },
 
   async updateUser(id: any, update: Partial<IUser>) {
+    const result = await this.getById(id);
+    if (!result) return null;
+
+    update.verified = !update.email || result.email === update.email;
     if (update.password) {
       update.password = await bcrypt.hash(update.password, SALT_ROUNDS);
     }
+
     const data = await User.findByIdAndUpdate(id, update, { new: true })
       .lean()
       .exec();
