@@ -4,7 +4,6 @@ import User, { IUser, IUserDoc } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 
-// TODO: prevent user from setting unwanted fields such as `todos`
 const userServices = {
   /**
    * @param complete if true, it will populate the `todos` field
@@ -21,7 +20,8 @@ const userServices = {
 
   async createUser(data: IUser) {
     data.password = await bcrypt.hash(data.password, SALT_ROUNDS);
-    const user = new User(data);
+    const value = User.filterAllowed(data);
+    const user = new User(value);
     return user.save();
   },
 
@@ -35,9 +35,11 @@ const userServices = {
       update.password = await bcrypt.hash(update.password, SALT_ROUNDS);
     }
 
-    const data = await User.findByIdAndUpdate(id, update, { new: true })
-      .lean()
-      .exec();
+    const value = User.filterAllowed(update);
+    const data = await User.findByIdAndUpdate(id, value, {
+      new: true,
+      omitUndefined: true,
+    }).lean();
     return data;
   },
 

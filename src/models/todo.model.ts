@@ -6,9 +6,13 @@ export interface ITodo {
   description?: string;
 }
 
-interface ITodoDoc extends ITodo, mongoose.Document {}
+export interface ITodoDoc extends ITodo, mongoose.Document {}
 
-const TodoSchema = new mongoose.Schema(
+export interface ITodoModel extends mongoose.Model<ITodoDoc> {
+  filterAllowed(obj: ITodo | Partial<ITodo>): object;
+}
+
+const TodoSchema = new mongoose.Schema<ITodoDoc>(
   {
     owner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -28,6 +32,11 @@ const TodoSchema = new mongoose.Schema(
   }
 );
 
+TodoSchema.statics.filterAllowed = function (obj: ITodo | Partial<ITodo>) {
+  const { title, description } = obj;
+  return { title, description };
+};
+
 /** This model contain todo */
-const Todo = mongoose.model<ITodoDoc>('Todo', TodoSchema);
+const Todo = mongoose.model<ITodoDoc, ITodoModel>('Todo', TodoSchema);
 export default Todo;
