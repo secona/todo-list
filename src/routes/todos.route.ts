@@ -1,6 +1,6 @@
 import express from 'express';
-import userValidators from '../validators/user.validator';
-import todoValidators from '../validators/todo.validator';
+import userValidators from '../middlewares/user.validator';
+import todoValidators from '../middlewares/todo.validator';
 import todoController from '../controllers/todo.controller';
 
 const router = express.Router();

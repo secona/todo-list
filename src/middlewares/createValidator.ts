@@ -13,10 +13,10 @@ export const handleValidationResult: RequestHandler = (req, res, next) => {
     : next();
 };
 
-export function createValidator(validators: ValidationChain[]) {
-  return [...validators, handleValidationResult];
-}
-
-export function createSchemaValidator(schema: Schema) {
-  return [...checkSchema(schema), handleValidationResult];
+export default function createValidator(
+  validators: ValidationChain[] | Schema
+): RequestHandler[] {
+  return Array.isArray(validators)
+    ? [...validators, handleValidationResult]
+    : [...checkSchema(validators), handleValidationResult];
 }

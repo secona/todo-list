@@ -1,8 +1,8 @@
-import { createSchemaValidator } from './createValidator';
+import createValidator from './createValidator';
 
 const todoValidators = {
   todoBody(optional?: true) {
-    return createSchemaValidator({
+    return createValidator({
       title: {
         in: 'body',
         optional,

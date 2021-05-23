@@ -1,18 +1,17 @@
 import { RequestHandler } from 'express';
 import * as bcrypt from 'bcrypt';
-import authServices from '../services/token.service';
+import tokenService from '../services/token.service';
 
-const authenticateToken: RequestHandler = (req, res, next) => {
+/** not intended to be used on its own */
+const _authenticateToken: RequestHandler = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
+  if (!token)
     return res.status(401).json({
       error: { message: 'Bearer token required' },
     });
-  }
 
-  authServices.verifyUserToken(token, async (error, decoded) => {
+  tokenService.verifyUserToken(token, async (error, decoded) => {
     if (error || !decoded) {
       return res.status(401).json({ error: { message: 'Invalid token' } });
     }
@@ -23,13 +22,10 @@ const authenticateToken: RequestHandler = (req, res, next) => {
       });
     }
 
-    // req.user will not be empty since before this middleware, wer are checking
-    // if user with id exists
-    const passwordValid = await bcrypt.compare(
-      decoded.password,
-      req.user!.password
-    );
-    if (!passwordValid || req.user?.email !== decoded.email) {
+    // req.user will not be empty since before this middleware, we're checking if user with id exists
+    const { password, email } = req.user!;
+    const passwordCorrect = await bcrypt.compare(decoded.password, password);
+    if (!passwordCorrect || email !== decoded.email) {
       return res.status(403).json({
         error: {
           message:
@@ -42,4 +38,4 @@ const authenticateToken: RequestHandler = (req, res, next) => {
   });
 };
 
-export default authenticateToken;
+export default _authenticateToken;

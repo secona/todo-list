@@ -1,5 +1,5 @@
 import express from 'express';
-import userValidator from '../validators/user.validator';
+import userValidator from '../middlewares/user.validator';
 import userController from '../controllers/user.controller';
 
 const router = express.Router();

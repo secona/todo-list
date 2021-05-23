@@ -1,30 +1,15 @@
-import { RequestHandler } from 'express';
 import { body } from 'express-validator';
 import userServices from '../services/user.service';
-import authenticateToken from '../middlewares/authenticateToken';
-import { createSchemaValidator, createValidator } from './createValidator';
+import createValidator from './createValidator';
 import validateMongoId from './mongoId.validator';
+import _authenticateToken from './_authenticateToken';
+import _isVerified from './_isVerified';
 
 const { isEmailAvailable } = userServices;
 
-const _isVerified = <RequestHandler>(async (req, res, next) => {
-  const id = req.params.id;
-  const result = await userServices.getById(id);
-  if (result === 'not-found')
-    return res.status(404).json({
-      error: { message: `User with id "${id}" not found` },
-    });
-  if (result === 'not-verified')
-    return res.status(403).json({
-      error: { message: `User with id "${id}"'s email not verified` },
-    });
-  req.user = result;
-  next();
-});
-
 const userValidators = {
   userBody(optional?: true) {
-    return createSchemaValidator({
+    return createValidator({
       name: {
         in: 'body',
         optional,
@@ -57,7 +42,7 @@ const userValidators = {
     body('password', 'Invalid Password').isString(),
   ]),
 
-  isVerified: [validateMongoId, _isVerified, authenticateToken],
+  isVerified: [validateMongoId, _isVerified, _authenticateToken],
 };
 
 export default userValidators;
