@@ -44,8 +44,10 @@ const userServices = {
   },
 
   async deleteUser(id: any) {
-    await User.deleteOne({ id }).exec();
-    await Todo.deleteMany({ owner: id }).exec();
+    await Promise.all([
+      User.deleteOne({ _id: id }),
+      Todo.deleteMany({ owner: id }),
+    ]);
     return true; //success!
   },
 
