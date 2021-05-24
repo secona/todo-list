@@ -42,7 +42,7 @@ const userValidators = {
     body('password', 'Invalid Password').isString(),
   ]),
 
-  isVerified: [validateMongoId, _isVerified, _authenticateToken],
+  isVerified: [...validateMongoId, _isVerified, _authenticateToken],
 };
 
 export default userValidators;

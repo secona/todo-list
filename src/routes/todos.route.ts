@@ -5,7 +5,7 @@ import todoController from '../controllers/todo.controller';
 
 const router = express.Router();
 
-router.all('/:id*', ...userValidators.isVerified);
+router.all('/:id*', userValidators.isVerified);
 
 router
   .route('/:id')

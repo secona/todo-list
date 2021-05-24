@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
 
-export interface ITodo {
-  owner: mongoose.Schema.Types.ObjectId;
+export interface ITodoAllowed {
   title: string;
   description?: string;
+}
+
+export interface ITodo extends ITodoAllowed {
+  owner: mongoose.Schema.Types.ObjectId;
 }
 
 export interface ITodoDoc extends ITodo, mongoose.Document {}
@@ -34,7 +37,7 @@ const TodoSchema = new mongoose.Schema<ITodoDoc>(
 
 TodoSchema.statics.filterAllowed = function (obj: ITodo | Partial<ITodo>) {
   const { title, description } = obj;
-  return { title, description };
+  return { title, description } as ITodoAllowed;
 };
 
 /** This model contain todo */

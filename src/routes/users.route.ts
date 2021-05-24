@@ -9,7 +9,7 @@ router.post('/signin', userValidator.signIn, userController.signIn);
 
 router
   .route('/:id')
-  .all(...userValidator.isVerified)
+  .all(userValidator.isVerified)
   .get(userController.byId)
   .put(userValidator.userBody(true), userController.update)
   .delete(userController.remove);
