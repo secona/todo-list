@@ -52,6 +52,7 @@ const userServices = {
   },
 
   /**
+   * Check is email is taken.\
    * Won't throw an error if the provided email is the
    * same as the email associated with the provided id
    */

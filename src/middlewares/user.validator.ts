@@ -3,6 +3,7 @@ import userServices from '../services/user.service';
 import createValidator from './createValidator';
 import validateMongoId from './mongoId.validator';
 import _authenticateToken from './_authenticateToken';
+import _checkLoginCredentials from './_checkLoginCredentials';
 import _isVerified from './_isVerified';
 
 const { isEmailAvailable } = userServices;
@@ -37,10 +38,13 @@ const userValidators = {
     });
   },
 
-  signIn: createValidator([
-    body('email', 'Invalid Email').isEmail(),
-    body('password', 'Invalid Password').isString(),
-  ]),
+  signIn: [
+    ...createValidator([
+      body('email', 'Invalid Email').isEmail(),
+      body('password', 'Invalid Password').isString(),
+    ]),
+    _checkLoginCredentials,
+  ],
 
   isVerified: [...validateMongoId, _isVerified, _authenticateToken],
 };

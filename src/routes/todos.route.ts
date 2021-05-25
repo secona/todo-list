@@ -5,15 +5,15 @@ import todoController from '../controllers/todo.controller';
 
 const router = express.Router();
 
-router.all('/:id*', userValidators.isVerified);
-
 router
   .route('/:id')
+  .all(userValidators.isVerified)
   .get(todoController.all)
   .post(todoValidators.todoBody(), todoController.new);
 
 router
   .route('/:id/:todoId')
+  .all(userValidators.isVerified)
   .get(todoController.getById)
   .put(todoValidators.todoBody(true), todoController.updateById)
   .delete(todoController.deleteById);

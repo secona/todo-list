@@ -28,18 +28,16 @@ const userController = {
 
   signIn: <RequestHandler>(async (req, res) => {
     try {
-      const { email, password } = req.body;
-      const result = await tokenServices.generateUserToken(email, password);
-      // TODO: clean this
-      if (typeof result === 'string')
-        return res.status(200).json({ data: result });
-      if (result === false)
-        return res.status(401).json({
-          error: { message: `Password Incorrect` },
-        });
-      res.status(404).json({
-        error: { message: `User with email "${email}" not found` },
+      const {
+        user: { _id: id },
+        body: { email, password },
+      } = req;
+      const token = await tokenServices.generateUserToken({
+        id,
+        email,
+        password,
       });
+      res.status(200).json({ data: token });
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -47,7 +45,7 @@ const userController = {
 
   update: <RequestHandler>(async (req, res) => {
     try {
-      const id = req.params.id
+      const id = req.params.id;
       const data = await userServices.updateUser(id, req.user!, req.body);
       return res.status(200).json({
         message: `Successfully updated user with id "${id}"`,
