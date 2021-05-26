@@ -22,10 +22,7 @@ const todoServices = {
     return todo;
   },
 
-  async updateTodoById(todoId: any, userId: string, body: Partial<ITodo>) {
-    const todo = await Todo.findById(todoId).exec();
-    if (!todo || todo.owner.toString() !== userId) return null;
-
+  async updateTodoById(todoId: any, body: Partial<ITodo>) {
     const value = Todo.filterAllowed(body);
     return await Todo.findByIdAndUpdate(todoId, value, {
       new: true,
@@ -34,14 +31,10 @@ const todoServices = {
   },
 
   async deleteTodoById(todoId: any, userId: string) {
-    const todo = await Todo.findById(todoId).exec();
-    if (!todo || todo.owner.toString() !== userId) return null;
-
     await Promise.all([
-      todo.deleteOne(),
-      User.updateOne({ id: userId }, { $pull: { todos: todoId } }),
+      Todo.deleteOne({ _id: todoId }),
+      User.updateOne({ _id: userId }, { $pull: { todos: todoId } }),
     ]);
-    return true; // delete success!
   },
 };
 

@@ -23,34 +23,15 @@ const todoController = {
   }),
 
   getById: <RequestHandler>(async (req, res) => {
-    try {
-      const todoId = req.params.todoId;
-      const userId = req.params.id;
-      const data = await todoService.getTodoById(todoId, userId);
-
-      if (data) return res.status(200).json({ data });
-      return res.status(404).json({
-        error: {
-          message: `Todo with id "${todoId}" that belongs to user with id "${userId}" not found`,
-        },
-      });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+    const data = req.todo;
+    res.status(200).json({ data });
   }),
 
   updateById: <RequestHandler>(async (req, res) => {
     try {
       const todoId = req.params.todoId;
-      const userId = req.params.id;
-      const data = await todoService.updateTodoById(todoId, userId, req.body);
-
-      if (data) return res.status(200).json({ data });
-      return res.status(404).json({
-        error: {
-          message: `Todo with id "${todoId}" that belongs to user with id "${userId}" not found`,
-        },
-      });
+      const data = await todoService.updateTodoById(todoId, req.body);
+      return res.status(200).json({ data });
     } catch (error) {
       res.status(500).json({ error });
     }
@@ -58,19 +39,10 @@ const todoController = {
 
   deleteById: <RequestHandler>(async (req, res) => {
     try {
-      const todoId = req.params.todoId;
-      const userId = req.params.id;
-      const data = await todoService.deleteTodoById(todoId, userId);
-
-      if (data)
-        return res.status(200).json({
-          message: `Successfully deleted todo with id "${todoId}"`,
-        });
-
-      return res.status(404).json({
-        error: {
-          message: `Todo with id "${todoId}" that belongs to user with id "${userId}" not found`,
-        },
+      const { todoId, id: userId } = req.params;
+      await todoService.deleteTodoById(todoId, userId);
+      return res.status(200).json({
+        message: `Successfully deleted todo with id "${todoId}"`,
       });
     } catch (error) {
       res.status(500).json({ error });

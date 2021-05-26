@@ -13,7 +13,7 @@ router
 
 router
   .route('/:id/:todoId')
-  .all(userValidators.isVerified)
+  .all(userValidators.isVerified, todoValidators.belongToUser)
   .get(todoController.getById)
   .put(todoValidators.todoBody(true), todoController.updateById)
   .delete(todoController.deleteById);
