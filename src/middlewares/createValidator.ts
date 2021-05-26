@@ -6,17 +6,15 @@ import {
   checkSchema,
 } from 'express-validator';
 
-export const handleValidationResult: RequestHandler = (req, res, next) => {
-  const errors = validationResult(req);
-  return !errors.isEmpty()
-    ? res.status(422).json({ errors: errors.array() })
-    : next();
-};
+const createValidator = (v: ValidationChain[] | Schema) =>
+  <RequestHandler>(async (req, res, next) => {
+    const validations = Array.isArray(v) ? v : checkSchema(v);
+    await Promise.all(validations.map(validation => validation.run(req)));
 
-export default function createValidator(
-  validators: ValidationChain[] | Schema
-): RequestHandler[] {
-  return Array.isArray(validators)
-    ? [...validators, handleValidationResult]
-    : [...checkSchema(validators), handleValidationResult];
-}
+    const errors = validationResult(req);
+    return !errors.isEmpty()
+      ? res.status(422).json({ error: errors.array() })
+      : next();
+  });
+
+export default createValidator;

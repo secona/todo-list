@@ -39,14 +39,14 @@ const userValidators = {
   },
 
   signIn: [
-    ...createValidator([
+    createValidator([
       body('email', 'Invalid Email').isEmail(),
       body('password', 'Invalid Password').isString(),
     ]),
     _checkLoginCredentials,
   ],
 
-  isVerified: [...validateMongoId, _isVerified, _authenticateToken],
+  isVerified: [validateMongoId, _isVerified, _authenticateToken],
 };
 
 export default userValidators;
