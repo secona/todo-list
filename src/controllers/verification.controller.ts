@@ -1,30 +1,26 @@
 import { RequestHandler } from 'express';
-import User from '../models/user.model';
 import verificationServices from '../services/verification.service';
+import userServices from '../services/user.service';
 import tokenServices from '../services/token.service';
-import { NotFoundError, BadRequestError } from '../utils/errors';
+import { BadRequestError } from '../utils/errors';
 
 const verificationController = {
   resendVerification: <RequestHandler>(async (req, res, next) => {
-    try {
-      const email = req.query.email as string;
-      const data = await User.findOne({ email }).lean().exec();
+    const email = req.query.email as string;
+    userServices
+      .getOne({ email }, { allowUnverified: true })
+      .then(user => {
+        if (user.verified)
+          throw new BadRequestError(
+            `User with email "${user.email}" already verified`
+          );
 
-      if (!data)
-        return next(new NotFoundError(`User with email "${email}" not found`));
-
-      if (data.verified)
-        return next(
-          new BadRequestError(`User with email "${email}" already verified`)
-        );
-
-      verificationServices.generateTokenAndSend(data.email, data._id);
-      res.status(200).json({
-        message: `Successfully sent verification email to "${email}"`,
-      });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+        verificationServices.generateTokenAndSend(user.email, user._id);
+        res.status(200).json({
+          message: `Successfully sent verification link to "${user.email}"`,
+        });
+      })
+      .catch(next);
   }),
 
   confirm: <RequestHandler>((req, res, next) => {
@@ -39,15 +35,15 @@ const verificationController = {
           error: { message: 'Invalid token' },
         });
 
-      User.findByIdAndUpdate(decoded.id, { verified: true })
-        .exec()
+      userServices
+        .updateUser(decoded.id, { verified: true }, { directSetVerified: true })
         .then(() => {
-          // redirect to front-end, for now do this
-          return res.status(200).json({
+          // redirect to front-end, for not do this
+          res.status(200).json({
             message: `Successfully verified email for user with id "${decoded.id}"`,
           });
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch(next);
     });
   }),
 };

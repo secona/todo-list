@@ -6,11 +6,11 @@ import toBoolean from '../utils/toBoolean';
 
 const userController = {
   byId: <RequestHandler>((req, res, next) => {
-    const id = req.params.id;
+    const _id = req.params.id;
     const complete = toBoolean(req.query.complete as string);
 
     userServices
-      .getById(id, complete)
+      .getOne({ _id }, { populate: complete })
       .then(data => res.status(200).json({ data }))
       .catch(next);
   }),
@@ -37,12 +37,11 @@ const userController = {
   }),
 
   update: <RequestHandler>((req, res, next) => {
-    const id = req.params.id;
     userServices
-      .updateUser(id, req.user!, req.body)
+      .updateUser(req.user!, req.body)
       .then(data =>
         res.status(200).json({
-          message: `Successfully updated user with id "${id}"`,
+          message: `Successfully updated user with id "${data?._id}"`,
           data,
         })
       )
@@ -50,13 +49,12 @@ const userController = {
   }),
 
   remove: <RequestHandler>((req, res, next) => {
-    const id = req.params.id;
     userServices
-      .deleteUser(id)
-      .then(data =>
-        res
-          .status(200)
-          .json({ message: `Successfully deleted user with id "${id}"` })
+      .deleteUser(req.user!)
+      .then(() =>
+        res.status(200).json({
+          message: `Successfully deleted user with id "${req.params.id}"`,
+        })
       )
       .catch(next);
   }),

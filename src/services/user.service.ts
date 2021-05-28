@@ -4,19 +4,25 @@ import User, { IUser, IUserDoc } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 import { NotFoundError, ForbiddenError } from '../utils/errors';
+import objectToString from '../utils/objectToString';
 
 const userServices = {
-  /**
-   * @param complete if true, it will populate the `todos` field
-   */
-  async getById(id: any, complete?: boolean) {
-    let query = User.findById(id).lean();
-    if (complete) query = query.populate('todos');
+  async getOne(
+    filter: Partial<IUser> & { _id?: string },
+    options: Partial<Record<'populate' | 'allowUnverified', boolean>> = {}
+  ) {
+    let query = User.findOne(filter).lean();
+    if (options.populate) query = query.populate('todos');
     const data = await query.exec();
 
-    if (!data) throw new NotFoundError(`User with id "${id}" not found`);
-    if (!data.verified)
+    if (!data)
+      throw new NotFoundError(
+        `User with ${objectToString(filter)} not found`
+      );
+
+    if (!options.allowUnverified && !data.verified)
       throw new ForbiddenError(`Email "${data.email}" is unverified`);
+
     return data;
   },
 
@@ -28,28 +34,34 @@ const userServices = {
   },
 
   async updateUser(
-    id: any,
-    user: LeanDocument<IUserDoc>,
-    update: Partial<IUser>
+    user: string | LeanDocument<IUserDoc>,
+    update: Partial<IUser>,
+    options: { directSetVerified?: boolean } = {}
   ) {
-    update.verified = !update.email || user.email === update.email;
-    if (update.password) {
+    if (typeof user === 'string') user = await this.getOne({ _id: user });
+
+    if (!options.directSetVerified)
+      update.verified = !update.email || user.email === update.email;
+    if (update.password)
       update.password = await bcrypt.hash(update.password, SALT_ROUNDS);
-    }
 
     const value = User.filterAllowed(update);
-    const data = await User.findByIdAndUpdate(id, value, {
-      new: true,
-      omitUndefined: true,
-    }).lean();
+    const data = await User.findByIdAndUpdate(
+      user._id,
+      { ...value, verified: update.verified },
+      { new: true, omitUndefined: true }
+    ).lean();
     return data;
   },
 
-  async deleteUser(id: any) {
+  async deleteUser(user: string | LeanDocument<IUserDoc>) {
+    if (typeof user === 'string') user = await this.getOne({ _id: user });
+
     await Promise.all([
-      User.deleteOne({ _id: id }),
-      Todo.deleteMany({ owner: id }),
+      User.deleteOne({ _id: user._id }),
+      Todo.deleteMany({ owner: user._id }),
     ]);
+
     return true; //success!
   },
 

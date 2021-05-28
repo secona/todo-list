@@ -3,9 +3,9 @@ import userServices from '../services/user.service';
 
 /** not intended to be used on its own */
 const _isVerified = <RequestHandler>(async (req, res, next) => {
-  const id = req.params.id;
+  const _id = req.params.id;
   userServices
-    .getById(id)
+    .getOne({ _id })
     .then(user => {
       req.user = user;
       next();
