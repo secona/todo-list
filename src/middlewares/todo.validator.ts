@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import createValidator from './createValidator';
 import Todo from '../models/todo.model';
+import { NotFoundError, ForbiddenError } from '../utils/errors';
 
 const todoValidators = {
   todoBody(optional?: true) {
@@ -25,18 +26,15 @@ const todoValidators = {
     const { todoId, id: userId } = req.params;
     const todo = await Todo.findById(todoId).lean().exec();
 
-    if (!todo) {
-      return res.status(404).json({
-        error: { message: `Todo with id "${todoId}" not found` },
-      });
-    }
+    if (!todo)
+      return next(new NotFoundError(`Todo with id "${todoId}" not found`));
 
     if (todo.owner.toString() !== userId) {
-      return res.status(403).json({
-        error: {
-          message: `Todo with id "${todoId}" does not belong to user with id "${userId}"`,
-        },
-      });
+      return next(
+        new ForbiddenError(
+          `Todo with id "${todoId}" does not belong to user with id "${userId}"`
+        )
+      );
     }
 
     req.todo = todo;

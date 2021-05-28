@@ -5,68 +5,60 @@ import verificationServices from '../services/verification.service';
 import toBoolean from '../utils/toBoolean';
 
 const userController = {
-  byId: <RequestHandler>(async (req, res) => {
-    try {
-      const id = req.params.id;
-      const complete = toBoolean(req.query.complete as string);
-      const data = await userServices.getById(id, complete);
-      return res.status(200).json({ data });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+  byId: <RequestHandler>((req, res, next) => {
+    const id = req.params.id;
+    const complete = toBoolean(req.query.complete as string);
+
+    userServices
+      .getById(id, complete)
+      .then(data => res.status(200).json({ data }))
+      .catch(next);
   }),
 
-  register: <RequestHandler>(async (req, res) => {
-    try {
-      const data = await userServices.createUser(req.body);
-      verificationServices.generateTokenAndSend(data.email, data.id);
-      res.status(201).json({ data });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+  register: <RequestHandler>((req, res, next) => {
+    userServices
+      .createUser(req.body)
+      .then(data => {
+        verificationServices.generateTokenAndSend(data.email, data.id);
+        res.status(201).json({ data });
+      })
+      .catch(next);
   }),
 
-  signIn: <RequestHandler>(async (req, res) => {
-    try {
-      const {
-        user: { _id: id },
-        body: { email, password },
-      } = req;
-      const token = await tokenServices.generateUserToken({
-        id,
-        email,
-        password,
-      });
-      res.status(200).json({ data: token });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+  signIn: <RequestHandler>((req, res, next) => {
+    const {
+      user: { _id: id },
+      body: { email, password },
+    } = req;
+    tokenServices
+      .generateUserToken({ id, email, password })
+      .then(token => res.status(200).json({ data: token }))
+      .catch(next);
   }),
 
-  update: <RequestHandler>(async (req, res) => {
-    try {
-      const id = req.params.id;
-      const data = await userServices.updateUser(id, req.user!, req.body);
-      return res.status(200).json({
-        message: `Successfully updated user with id "${id}"`,
-        data,
-      });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+  update: <RequestHandler>((req, res, next) => {
+    const id = req.params.id;
+    userServices
+      .updateUser(id, req.user!, req.body)
+      .then(data =>
+        res.status(200).json({
+          message: `Successfully updated user with id "${id}"`,
+          data,
+        })
+      )
+      .catch(next);
   }),
 
-  remove: <RequestHandler>(async (req, res) => {
-    try {
-      const id = req.params.id;
-      await userServices.deleteUser(id);
-
-      return res.status(200).json({
-        message: `Successfully deleted user with id "${id}"`,
-      });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+  remove: <RequestHandler>((req, res, next) => {
+    const id = req.params.id;
+    userServices
+      .deleteUser(id)
+      .then(data =>
+        res
+          .status(200)
+          .json({ message: `Successfully deleted user with id "${id}"` })
+      )
+      .catch(next);
   }),
 };
 

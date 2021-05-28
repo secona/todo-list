@@ -3,6 +3,7 @@ import { LeanDocument } from 'mongoose';
 import User, { IUser, IUserDoc } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
+import { NotFoundError, ForbiddenError } from '../utils/errors';
 
 const userServices = {
   /**
@@ -13,8 +14,9 @@ const userServices = {
     if (complete) query = query.populate('todos');
     const data = await query.exec();
 
-    if (!data) return 'not-found';
-    if (!data.verified) return 'not-verified';
+    if (!data) throw new NotFoundError(`User with id "${id}" not found`);
+    if (!data.verified)
+      throw new ForbiddenError(`Email "${data.email}" is unverified`);
     return data;
   },
 

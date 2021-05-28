@@ -2,22 +2,21 @@ import { RequestHandler } from 'express';
 import User from '../models/user.model';
 import verificationServices from '../services/verification.service';
 import tokenServices from '../services/token.service';
+import { NotFoundError, BadRequestError } from '../utils/errors';
 
 const verificationController = {
-  resendVerification: <RequestHandler>(async (req, res) => {
+  resendVerification: <RequestHandler>(async (req, res, next) => {
     try {
       const email = req.query.email as string;
       const data = await User.findOne({ email }).lean().exec();
 
       if (!data)
-        return res.status(404).json({
-          error: { message: `User with email "${email}" not found` },
-        });
+        return next(new NotFoundError(`User with email "${email}" not found`));
 
       if (data.verified)
-        return res.status(400).json({
-          error: { message: `User with email "${email}" already verified` },
-        });
+        return next(
+          new BadRequestError(`User with email "${email}" already verified`)
+        );
 
       verificationServices.generateTokenAndSend(data.email, data._id);
       res.status(200).json({
@@ -28,12 +27,10 @@ const verificationController = {
     }
   }),
 
-  confirm: <RequestHandler>(async (req, res) => {
+  confirm: <RequestHandler>((req, res, next) => {
     const token = req.query.token as string;
     if (!token)
-      return res.status(400).json({
-        error: { message: 'Token required for confirmation' },
-      });
+      return next(new BadRequestError('Token required for confirmation'));
 
     tokenServices.verifyEmailVerificationToken(token, (error, decoded) => {
       if (error || !decoded)

@@ -1,5 +1,6 @@
 import Todo, { ITodo } from '../models/todo.model';
 import User from '../models/user.model';
+import { NotFoundError, ForbiddenError } from '../utils/errors';
 
 const todoServices = {
   async getAllUserTodos(userId: any) {
@@ -18,7 +19,11 @@ const todoServices = {
 
   async getTodoById(todoId: any, userId: string) {
     const todo = await Todo.findById(todoId).lean().exec();
-    if (!todo || todo.owner.toString() !== userId) return null;
+    if (!todo) throw new NotFoundError(`Todo with id "${todoId}" not found`);
+    if (todo.owner.toString() !== userId)
+      throw new ForbiddenError(
+        `Todo with id "${todoId}" does not belong to user with id "${userId}"`
+      );
     return todo;
   },
 
