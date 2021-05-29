@@ -1,41 +1,60 @@
-import Todo, { ITodo } from '../models/todo.model';
-import User from '../models/user.model';
-import { NotFoundError, ForbiddenError } from '../utils/errors';
+import { LeanDocument } from 'mongoose';
+import Todo, { ITodo, ITodoDoc } from '../models/todo.model';
+import User, { IUserDoc } from '../models/user.model';
+import userServices from '../services/user.service';
+import { NotFoundError } from '../utils/errors';
+import objectToString from '../utils/objectToString';
 
 const todoServices = {
-  async getAllUserTodos(userId: any) {
-    const todos = await Todo.find({ owner: userId }).lean().exec();
+  async getAllUserTodos(user: string | LeanDocument<IUserDoc>) {
+    if (typeof user === 'string')
+      user = await userServices.getOne({ _id: user });
+
+    const todos = await Todo.find({ owner: user._id }).lean().exec();
     return todos;
   },
 
-  async newTodo(userId: any, body: ITodo) {
-    const newTodo = new Todo({ ...body, owner: userId } as ITodo);
+  async newTodo(user: string | LeanDocument<IUserDoc>, body: ITodo) {
+    if (typeof user === 'string')
+      user = await userServices.getOne({ _id: user });
+
+    const { _id } = user;
+    const newTodo = new Todo({ ...body, owner: _id } as ITodo);
     const [savedTodo] = await Promise.all([
       newTodo.save(),
-      User.updateOne({ _id: userId }, { $push: { todos: newTodo._id } }),
+      User.updateOne({ _id }, { $push: { todos: newTodo._id } }),
     ]);
     return savedTodo;
   },
 
-  async getTodoById(todoId: any, userId: string) {
-    const todo = await Todo.findById(todoId).lean().exec();
-    if (!todo) throw new NotFoundError(`Todo with id "${todoId}" not found`);
-    if (todo.owner.toString() !== userId)
-      throw new ForbiddenError(
-        `Todo with id "${todoId}" does not belong to user with id "${userId}"`
-      );
+  async getOneTodo(
+    filter: Partial<
+      Omit<ITodo, 'owner'> & { _id: string; owner: ITodo['owner'] | string }
+    >
+  ) {
+    const todo = await Todo.findOne(filter).lean().exec();
+    if (!todo)
+      throw new NotFoundError(`Todo with ${objectToString(filter)} not found`);
     return todo;
   },
 
-  async updateTodoById(todoId: any, body: Partial<ITodo>) {
+  async updateTodo(
+    todo: string | LeanDocument<ITodoDoc>,
+    body: Partial<ITodo>
+  ) {
+    if (typeof todo === 'string') todo = await this.getOneTodo({ _id: todo });
+
     const value = Todo.filterAllowed(body);
-    return await Todo.findByIdAndUpdate(todoId, value, {
+    return await Todo.findByIdAndUpdate(todo._id, value, {
       new: true,
       omitUndefined: true,
     }).lean();
   },
 
-  async deleteTodoById(todoId: any, userId: string) {
+  async deleteTodo(todo: string | LeanDocument<ITodoDoc>) {
+    if (typeof todo === 'string') todo = await this.getOneTodo({ _id: todo });
+
+    const { _id: todoId, owner: userId } = todo;
     await Promise.all([
       Todo.deleteOne({ _id: todoId }),
       User.updateOne({ _id: userId }, { $pull: { todos: todoId } }),

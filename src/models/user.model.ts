@@ -7,7 +7,7 @@ export interface IUserAllowed {
 }
 
 export interface IUser extends IUserAllowed {
-  todos: mongoose.Schema.Types.ObjectId[];
+  todos: mongoose.Types.ObjectId[];
   verified: boolean;
 }
 

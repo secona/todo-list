@@ -3,17 +3,15 @@ import todoService from '../services/todo.service';
 
 const todoController = {
   all: <RequestHandler>((req, res, next) => {
-    const userId = req.params.id;
     todoService
-      .getAllUserTodos(userId)
+      .getAllUserTodos(req.user!)
       .then(data => res.status(200).json({ data }))
       .catch(next);
   }),
 
   new: <RequestHandler>((req, res, next) => {
-    const userId = req.params.id;
     todoService
-      .newTodo(userId, req.body)
+      .newTodo(req.user!, req.body)
       .then(data => res.status(201).json({ data }))
       .catch(next);
   }),
@@ -24,12 +22,11 @@ const todoController = {
   }),
 
   updateById: <RequestHandler>((req, res, next) => {
-    const todoId = req.params.todoId;
     todoService
-      .updateTodoById(todoId, req.body)
+      .updateTodo(req.todo!, req.body)
       .then(data =>
         res.status(200).json({
-          message: `Successfully updated todo with id "${todoId}"`,
+          message: `Successfully updated todo with id "${data?._id}"`,
           data,
         })
       )
@@ -37,13 +34,13 @@ const todoController = {
   }),
 
   deleteById: <RequestHandler>((req, res, next) => {
-    const { todoId, id: userId } = req.params;
+    const { todoId } = req.params;
     todoService
-      .deleteTodoById(todoId, userId)
+      .deleteTodo(req.todo!)
       .then(() =>
-        res
-          .status(200)
-          .json({ message: `Successfully deleted todo with id "${todoId}"` })
+        res.status(200).json({
+          message: `Successfully deleted todo with id "${todoId}"`,
+        })
       )
       .catch(next);
   }),

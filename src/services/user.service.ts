@@ -16,14 +16,16 @@ const userServices = {
     const data = await query.exec();
 
     if (!data)
-      throw new NotFoundError(
-        `User with ${objectToString(filter)} not found`
-      );
+      throw new NotFoundError(`User with ${objectToString(filter)} not found`);
 
     if (!options.allowUnverified && !data.verified)
       throw new ForbiddenError(`Email "${data.email}" is unverified`);
 
     return data;
+  },
+
+  async populateLean(data: LeanDocument<IUserDoc>) {
+    return User.populate(data, 'todos');
   },
 
   async createUser(data: IUser) {

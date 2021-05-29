@@ -6,13 +6,13 @@ export interface ITodoAllowed {
 }
 
 export interface ITodo extends ITodoAllowed {
-  owner: mongoose.Schema.Types.ObjectId;
+  owner: mongoose.Types.ObjectId;
 }
 
 export interface ITodoDoc extends ITodo, mongoose.Document {}
 
 export interface ITodoModel extends mongoose.Model<ITodoDoc> {
-  filterAllowed(obj: ITodo | Partial<ITodo>): object;
+  filterAllowed(obj: ITodo | Partial<ITodo>): ITodoAllowed;
 }
 
 const TodoSchema = new mongoose.Schema<ITodoDoc>(

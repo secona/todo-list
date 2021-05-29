@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import createValidator from './createValidator';
-import Todo from '../models/todo.model';
+import todoServices from '../services/todo.service';
 import { NotFoundError, ForbiddenError } from '../utils/errors';
+import mongoose from 'mongoose';
 
 const todoValidators = {
   todoBody(optional?: true) {
@@ -23,22 +24,14 @@ const todoValidators = {
   },
 
   belongToUser: <RequestHandler>(async (req, res, next) => {
-    const { todoId, id: userId } = req.params;
-    const todo = await Todo.findById(todoId).lean().exec();
-
-    if (!todo)
-      return next(new NotFoundError(`Todo with id "${todoId}" not found`));
-
-    if (todo.owner.toString() !== userId) {
-      return next(
-        new ForbiddenError(
-          `Todo with id "${todoId}" does not belong to user with id "${userId}"`
-        )
-      );
+    try {
+      const { todoId: _id, id: owner } = req.params;
+      const todo = await todoServices.getOneTodo({ _id, owner });
+      req.todo = todo;
+      next();
+    } catch (e) {
+      next(e);
     }
-
-    req.todo = todo;
-    next();
   }),
 };
 

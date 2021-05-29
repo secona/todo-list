@@ -5,14 +5,16 @@ import verificationServices from '../services/verification.service';
 import toBoolean from '../utils/toBoolean';
 
 const userController = {
-  byId: <RequestHandler>((req, res, next) => {
-    const _id = req.params.id;
-    const complete = toBoolean(req.query.complete as string);
-
-    userServices
-      .getOne({ _id }, { populate: complete })
-      .then(data => res.status(200).json({ data }))
-      .catch(next);
+  byId: <RequestHandler>(async (req, res, next) => {
+    try {
+      const complete = toBoolean(req.query.complete as string);
+      const user = !complete
+        ? req.user!
+        : await userServices.populateLean(req.user!);
+      res.status(200).json({ data: user });
+    } catch (e) {
+      next(e);
+    }
   }),
 
   register: <RequestHandler>((req, res, next) => {
