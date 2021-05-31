@@ -8,6 +8,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["@types"]
-  }
+    "typeRoots": ["@types"],
+    "types": ["@types/jest"]
+  },
+  "exclude": ["src/**/*.test.ts", "node_modules"]
 }

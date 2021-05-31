@@ -1,3 +1,4 @@
-export default function toBoolean(value: string) {
-  return value === '1' || /^true$/i.test(value);
+const consideredTrue: string[] = ['1', 'true'];
+export default function toBoolean(value: string | number) {
+  return consideredTrue.includes(value.toString().toLowerCase());
 }
