@@ -4,7 +4,7 @@ import {
   ForbiddenError,
   BadRequestError,
   UnauthorizedError,
-} from './errors';
+} from '../errors';
 
 it('should have all the correct values for BaseError', () => {
   const err = new BaseError(405, 'method not allowed');

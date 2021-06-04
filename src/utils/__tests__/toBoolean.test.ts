@@ -1,4 +1,4 @@
-import toBoolean from './toBoolean';
+import toBoolean from '../toBoolean';
 
 describe('Strings to boolean', () => {
   it('should return true for "true"', () => {

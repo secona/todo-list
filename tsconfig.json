@@ -11,5 +11,5 @@
     "typeRoots": ["@types"],
     "types": ["@types/jest"]
   },
-  "exclude": ["src/**/*.test.ts", "node_modules"]
+  "exclude": ["src/**/*.test.ts", "src/**/__tests__", "node_modules"]
 }

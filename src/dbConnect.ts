@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MONGODB_URI } from './constants';
+import { MONGODB_URI } from './constants/env';
 
 export default function dbConnect() {
   return mongoose.connect(MONGODB_URI as string, {

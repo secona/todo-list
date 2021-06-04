@@ -1,4 +1,4 @@
-import objectToString from './objectToString';
+import objectToString from '../objectToString';
 
 it('should return "" for empty object', () => {
   expect(objectToString({})).toBe('');

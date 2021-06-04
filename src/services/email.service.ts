@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { Options } from 'nodemailer/lib/mailer';
-import { EMAIL_ADDRESS, EMAIL_PASSWORD, EMAIL_NAME } from '../constants';
+import { EMAIL_ADDRESS, EMAIL_PASSWORD, EMAIL_NAME } from '../constants/env';
 
 const emailServices = {
   from: { name: EMAIL_NAME, address: EMAIL_ADDRESS },
