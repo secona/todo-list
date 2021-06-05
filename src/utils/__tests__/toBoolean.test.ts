@@ -10,7 +10,7 @@ describe('Strings to boolean', () => {
   });
 
   it('should return true for "TRUE"', () => {
-    expect(toBoolean('TrUe')).toBe(true);
+    expect(toBoolean('TRUE')).toBe(true);
   });
 
   it('should return false for "false"', () => {
@@ -22,7 +22,7 @@ describe('Strings to boolean', () => {
   });
 
   it('should return false for "FALSE"', () => {
-    expect(toBoolean('FalSe')).toBe(false);
+    expect(toBoolean('FALSE')).toBe(false);
   });
 });
 
@@ -42,20 +42,22 @@ describe('Numbers to boolean', () => {
   it('should return false for "0"', () => {
     expect(toBoolean('0')).toBe(false);
   });
+});
+
+describe('Random string', () => {
+  it('should return false for "213"', () => {
+    expect(toBoolean('213')).toBe(false);
+  });
+
+  it('should return false for "qwetrueqwe"', () => {
+    expect(toBoolean('qwetrueqwe')).toBe(false);
+  });
 
   it('should return false for 123', () => {
     expect(toBoolean(123)).toBe(false);
   });
 
-  it('should return false for "123"', () => {
-    expect(toBoolean('123')).toBe(false);
-  });
-
-  it('should return false for 1234567890', () => {
-    expect(toBoolean(1234567890)).toBe(false);
-  });
-
-  it('should return false for "1234567890"', () => {
-    expect(toBoolean('1234567890')).toBe(false);
+  it('should return false for "qwefalseqwe"', () => {
+    expect(toBoolean('qwefalseqwe')).toBe(false);
   });
 });

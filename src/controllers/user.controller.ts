@@ -10,9 +10,7 @@ const userController: Record<
 > = {
   byId: async (req, res, next) => {
     try {
-      // TODO: fix toBoolean. throws error `Cannot read property 'toString' of undefined`
-      // const complete = toBoolean(req.query.complete as string);
-      const complete = !!req.query.complete;
+      const complete = toBoolean(req.query.complete as string);
       const user = !complete
         ? req.user!
         : await userServices.populateLean(req.user!);
