@@ -6,7 +6,7 @@ import { NotFoundError } from '../utils/errors';
 import objectToString from '../utils/objectToString';
 
 const todoServices = {
-  async getAllUserTodos(user: string | LeanDocument<IUserDoc>) {
+  async getAllUserTodos(user: string | LeanDocument<IUserDoc> | IUserDoc) {
     if (typeof user === 'string')
       user = await userServices.getOne({ _id: user });
 
@@ -14,7 +14,7 @@ const todoServices = {
     return todos;
   },
 
-  async newTodo(user: string | LeanDocument<IUserDoc>, body: ITodo) {
+  async newTodo(user: string | LeanDocument<IUserDoc> | IUserDoc, body: ITodo) {
     if (typeof user === 'string')
       user = await userServices.getOne({ _id: user });
 
@@ -39,7 +39,7 @@ const todoServices = {
   },
 
   async updateTodo(
-    todo: string | LeanDocument<ITodoDoc>,
+    todo: string | LeanDocument<ITodoDoc> | ITodoDoc,
     body: Partial<ITodo>
   ) {
     if (typeof todo === 'string') todo = await this.getOneTodo({ _id: todo });
@@ -51,7 +51,7 @@ const todoServices = {
     }).lean();
   },
 
-  async deleteTodo(todo: string | LeanDocument<ITodoDoc>) {
+  async deleteTodo(todo: string | LeanDocument<ITodoDoc> | ITodoDoc) {
     if (typeof todo === 'string') todo = await this.getOneTodo({ _id: todo });
 
     const { _id: todoId, owner: userId } = todo;

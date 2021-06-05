@@ -1,15 +1,15 @@
 import express from 'express';
 import mountRoutes from './routes';
 import { LOG_PREFIX } from './constants';
-import dbConnect from './dbConnect';
+import db from './db';
 import logger from './middlewares/logger';
 import errorHandler from './middlewares/errorHandler';
 
 const app = express();
 
-dbConnect()
+db.connect()
   .then(() => console.log(LOG_PREFIX, 'Connected to database'))
-  .catch(err => console.log(err));
+  .catch(console.log);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

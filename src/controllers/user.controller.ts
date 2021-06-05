@@ -4,10 +4,15 @@ import userServices from '../services/user.service';
 import verificationServices from '../services/verification.service';
 import toBoolean from '../utils/toBoolean';
 
-const userController = {
-  byId: <RequestHandler>(async (req, res, next) => {
+const userController: Record<
+  'byId' | 'register' | 'signIn' | 'update' | 'remove',
+  RequestHandler
+> = {
+  byId: async (req, res, next) => {
     try {
-      const complete = toBoolean(req.query.complete as string);
+      // TODO: fix toBoolean. throws error `Cannot read property 'toString' of undefined`
+      // const complete = toBoolean(req.query.complete as string);
+      const complete = !!req.query.complete;
       const user = !complete
         ? req.user!
         : await userServices.populateLean(req.user!);
@@ -15,9 +20,9 @@ const userController = {
     } catch (e) {
       next(e);
     }
-  }),
+  },
 
-  register: <RequestHandler>((req, res, next) => {
+  register: (req, res, next) => {
     userServices
       .createUser(req.body)
       .then(data => {
@@ -25,9 +30,9 @@ const userController = {
         res.status(201).json({ data });
       })
       .catch(next);
-  }),
+  },
 
-  signIn: <RequestHandler>((req, res, next) => {
+  signIn: (req, res, next) => {
     const {
       user: { _id: id },
       body: { email, password },
@@ -36,9 +41,9 @@ const userController = {
       .generateUserToken({ id, email, password })
       .then(token => res.status(200).json({ data: token }))
       .catch(next);
-  }),
+  },
 
-  update: <RequestHandler>((req, res, next) => {
+  update: (req, res, next) => {
     userServices
       .updateUser(req.user!, req.body)
       .then(data =>
@@ -48,9 +53,9 @@ const userController = {
         })
       )
       .catch(next);
-  }),
+  },
 
-  remove: <RequestHandler>((req, res, next) => {
+  remove: (req, res, next) => {
     userServices
       .deleteUser(req.user!)
       .then(() =>
@@ -59,7 +64,7 @@ const userController = {
         })
       )
       .catch(next);
-  }),
+  },
 };
 
 export default userController;

@@ -5,9 +5,7 @@ import userServices from '../services/user.service';
 const _isVerified = <RequestHandler>(async (req, res, next) => {
   try {
     const { id: _id } = req.params;
-    const user = await userServices.getOne({ _id });
-
-    req.user = user;
+    req.user = await userServices.getOne({ _id });
     next();
   } catch (e) {
     next(e);

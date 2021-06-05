@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { LeanDocument } from 'mongoose';
-import User, { IUser, IUserDoc } from '../models/user.model';
+import User, { IUser, IUserDoc, IUserAllowed } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 import { NotFoundError, ForbiddenError } from '../utils/errors';
@@ -28,35 +28,35 @@ const userServices = {
     return User.populate(data, 'todos');
   },
 
-  async createUser(data: IUser) {
+  async createUser(data: IUserAllowed) {
     data.password = await bcrypt.hash(data.password, SALT_ROUNDS);
-    const value = User.filterAllowed(data);
-    const user = new User(value);
+    data = User.filterAllowed(data);
+    const user = new User(data);
     return user.save();
   },
 
   async updateUser(
-    user: string | LeanDocument<IUserDoc>,
-    update: Partial<IUser>,
-    options: { directSetVerified?: boolean } = {}
-  ) {
+    user: string | LeanDocument<IUserDoc> | IUserDoc,
+    update: Partial<IUserAllowed>
+  ): Promise<LeanDocument<IUserDoc>> {
     if (typeof user === 'string') user = await this.getOne({ _id: user });
 
-    if (!options.directSetVerified)
-      update.verified = !update.email || user.email === update.email;
-    if (update.password)
-      update.password = await bcrypt.hash(update.password, SALT_ROUNDS);
+    const value = {
+      ...User.filterAllowed(update),
+      verified: !update.email || user.email === update.email,
+      password:
+        update.password && (await bcrypt.hash(update.password, SALT_ROUNDS)),
+    };
 
-    const value = User.filterAllowed(update);
-    const data = await User.findByIdAndUpdate(
-      user._id,
-      { ...value, verified: update.verified },
-      { new: true, omitUndefined: true }
-    ).lean();
-    return data;
+    return User.findByIdAndUpdate(user._id, value, {
+      new: true,
+      omitUndefined: true,
+    }).lean();
   },
 
-  async deleteUser(user: string | LeanDocument<IUserDoc>) {
+  async deleteUser(
+    user: string | LeanDocument<IUserDoc> | IUserDoc
+  ): Promise<LeanDocument<IUserDoc> | IUserDoc> {
     if (typeof user === 'string') user = await this.getOne({ _id: user });
 
     await Promise.all([
@@ -64,14 +64,17 @@ const userServices = {
       Todo.deleteMany({ owner: user._id }),
     ]);
 
-    return true; //success!
+    return user; //success!
   },
 
-  /**
-   * Check is email is taken.\
-   * Won't throw an error if the provided email is the
-   * same as the email associated with the provided id
-   */
+  async markVerified(user: string | LeanDocument<IUserDoc> | IUserDoc) {
+    if (typeof user === 'string')
+      user = await this.getOne({ _id: user }, { allowUnverified: true });
+    return User.findByIdAndUpdate(user._id, { verified: true }, { new: true })
+      .lean()
+      .exec();
+  },
+
   isEmailAvailable(email: string, id?: any) {
     return User.findOne({ email }).then(data => {
       if (data && data._id.toString() !== id) {

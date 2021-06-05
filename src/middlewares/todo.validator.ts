@@ -1,8 +1,6 @@
 import { RequestHandler } from 'express';
 import createValidator from './createValidator';
 import todoServices from '../services/todo.service';
-import { NotFoundError, ForbiddenError } from '../utils/errors';
-import mongoose from 'mongoose';
 
 const todoValidators = {
   todoBody(optional?: true) {

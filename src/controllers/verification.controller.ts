@@ -4,8 +4,11 @@ import userServices from '../services/user.service';
 import tokenServices from '../services/token.service';
 import { BadRequestError } from '../utils/errors';
 
-const verificationController = {
-  resendVerification: <RequestHandler>(async (req, res, next) => {
+const verificationController: Record<
+  'resendVerification' | 'confirm',
+  RequestHandler
+> = {
+  resendVerification: async (req, res, next) => {
     const email = req.query.email as string;
     userServices
       .getOne({ email }, { allowUnverified: true })
@@ -21,9 +24,9 @@ const verificationController = {
         });
       })
       .catch(next);
-  }),
+  },
 
-  confirm: <RequestHandler>((req, res, next) => {
+  confirm: (req, res, next) => {
     const token = req.query.token as string;
     if (!token)
       return next(new BadRequestError('Token required for confirmation'));
@@ -36,7 +39,7 @@ const verificationController = {
         });
 
       userServices
-        .updateUser(decoded.id, { verified: true }, { directSetVerified: true })
+        .markVerified(decoded.id)
         .then(() => {
           // redirect to front-end, for not do this
           res.status(200).json({
@@ -45,7 +48,7 @@ const verificationController = {
         })
         .catch(next);
     });
-  }),
+  },
 };
 
 export default verificationController;
