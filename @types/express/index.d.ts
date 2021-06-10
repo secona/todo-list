@@ -5,8 +5,8 @@ import { IUserDoc } from '../../src/models/user.model';
 declare global {
   namespace Express {
     interface Request {
-      user: LeanDocument<IUserDoc>;
-      todo: LeanDocument<ITodoDoc>;
+      user?: LeanDocument<IUserDoc>;
+      todo?: LeanDocument<ITodoDoc>;
     }
   }
 }

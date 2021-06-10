@@ -3,7 +3,11 @@ import { LeanDocument } from 'mongoose';
 import User, { IUser, IUserDoc, IUserAllowed } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
-import { NotFoundError, ForbiddenError } from '../utils/errors';
+import {
+  NotFoundError,
+  ForbiddenError,
+  UnauthorizedError,
+} from '../utils/errors';
 import objectToString from '../utils/objectToString';
 
 const userServices = {
@@ -73,6 +77,20 @@ const userServices = {
     return User.findByIdAndUpdate(user._id, { verified: true }, { new: true })
       .lean()
       .exec();
+  },
+
+  /**
+   * @param user user's email or document
+   * @param password user's plain text (aka non-hashed) password
+   */
+  async isPasswordCorrect(
+    user: string | LeanDocument<IUserDoc> | IUserDoc,
+    password: any
+  ) {
+    if (typeof user === 'string') user = await this.getOne({ email: user });
+    const result = await bcrypt.compare(password, user.password);
+    if (!result) throw new UnauthorizedError('Password incorrect');
+    return result;
   },
 
   isEmailAvailable(email: string, id?: any) {

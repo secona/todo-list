@@ -30,15 +30,21 @@ const userController: Record<
       .catch(next);
   },
 
-  signIn: (req, res, next) => {
-    const {
-      user: { _id: id },
-      body: { email, password },
-    } = req;
-    tokenServices
-      .generateUserToken({ id, email, password })
-      .then(token => res.status(200).json({ data: token }))
-      .catch(next);
+  signIn: async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const user = await userServices.getOne({ email });
+      await userServices.isPasswordCorrect(user, password);
+
+      const token = await tokenServices.generateUserToken({
+        id: String(user._id),
+        email,
+        password,
+      });
+      res.status(200).json({ data: token });
+    } catch (e) {
+      next(e);
+    }
   },
 
   update: (req, res, next) => {

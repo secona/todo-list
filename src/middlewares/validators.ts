@@ -1,14 +1,18 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import userServices from '../services/user.service';
 import createValidator from './createValidator';
-import validateMongoId from './mongoId.validator';
-import _authenticateToken from './_authenticateToken';
-import _checkLoginCredentials from './_checkLoginCredentials';
-import _isVerified from './_isVerified';
 
 const { isEmailAvailable } = userServices;
 
-const userValidators = {
+/**
+ * Validators object that validates data (body, params, etc).\
+ * Does not handle authentication and/or authorization
+ */
+const validators = {
+  mongoId: createValidator([
+    param(['id', 'todoId'], 'Invalid Id').isMongoId().optional(),
+  ]),
+
   userBody(optional?: true) {
     return createValidator({
       name: {
@@ -38,15 +42,28 @@ const userValidators = {
     });
   },
 
-  signIn: [
-    createValidator([
-      body('email', 'Invalid Email').isEmail(),
-      body('password', 'Invalid Password').isString(),
-    ]),
-    _checkLoginCredentials,
-  ],
+  userSignIn: createValidator([
+    body('email', 'Invalid Email').isEmail(),
+    body('password', 'Invalid Password').isString(),
+  ]),
 
-  isVerified: [validateMongoId, _isVerified, _authenticateToken],
+  todoBody(optional?: true) {
+    return createValidator({
+      title: {
+        in: 'body',
+        optional,
+        errorMessage: 'Invalid title',
+        isString: { bail: true },
+        notEmpty: true,
+      },
+      description: {
+        in: 'body',
+        errorMessage: 'Invalid description',
+        isString: true,
+        optional: true,
+      },
+    });
+  },
 };
 
-export default userValidators;
+export default validators;

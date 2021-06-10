@@ -1,21 +1,21 @@
 import express from 'express';
-import userValidators from '../middlewares/user.validator';
-import todoValidators from '../middlewares/todo.validator';
+import authorize from '../middlewares/authorize';
+import validators from '../middlewares/validators';
 import todoController from '../controllers/todo.controller';
 
 const router = express.Router();
 
 router
   .route('/:id')
-  .all(userValidators.isVerified)
+  .all(authorize)
   .get(todoController.all)
-  .post(todoValidators.todoBody(), todoController.new);
+  .post(validators.todoBody(), todoController.new);
 
 router
   .route('/:id/:todoId')
-  .all(userValidators.isVerified, todoValidators.belongToUser)
+  .all(authorize)
   .get(todoController.getById)
-  .put(todoValidators.todoBody(true), todoController.updateById)
+  .put(validators.todoBody(true), todoController.updateById)
   .delete(todoController.deleteById);
 
 export default router;

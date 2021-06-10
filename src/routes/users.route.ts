@@ -1,17 +1,18 @@
 import express from 'express';
-import userValidator from '../middlewares/user.validator';
+import authorize from '../middlewares/authorize';
+import validators from '../middlewares/validators';
 import userController from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.post('/register', userValidator.userBody(), userController.register);
-router.post('/signin', userValidator.signIn, userController.signIn);
+router.post('/register', validators.userBody(), userController.register);
+router.post('/signin', validators.userSignIn, userController.signIn);
 
 router
   .route('/:id')
-  .all(userValidator.isVerified)
+  .all(authorize)
   .get(userController.byId)
-  .put(userValidator.userBody(true), userController.update)
+  .put(validators.userBody(true), userController.update)
   .delete(userController.remove);
 
 export default router;
