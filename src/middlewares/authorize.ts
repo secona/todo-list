@@ -9,7 +9,7 @@ const authorize: RequestHandler[] = [
   validators.mongoId,
   async (req, res, next) => {
     try {
-      const { id, todoId } = req.params;
+      const { userId, todoId } = req.params;
       const authHeader = req.headers.authorization;
       const token = authHeader && authHeader.split(' ')[1];
       if (!token)
@@ -17,10 +17,10 @@ const authorize: RequestHandler[] = [
           'Bearer token required in `authorization` header'
         );
 
-      req.user = await userServices.getOne({ _id: id });
+      req.user = await userServices.getOne({ _id: userId });
       await tokenServices.verifyUserToken(token, req.user);
       req.todo = todoId
-        ? await todoServices.getOneTodo({ _id: todoId, owner: id })
+        ? await todoServices.getOneTodo({ _id: todoId, owner: userId })
         : undefined;
 
       next();

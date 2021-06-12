@@ -9,10 +9,10 @@ router.post('/register', validators.userBody(), userController.register);
 router.post('/signin', validators.userSignIn, userController.signIn);
 
 router
-  .route('/:id')
+  .route('/:userId')
   .all(authorize)
   .get(userController.byId)
-  .put(validators.userBody(true), userController.update)
+  .patch(validators.userBody(true), userController.update)
   .delete(userController.remove);
 
 export default router;
