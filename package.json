@@ -4,9 +4,14 @@
   "description": "Fullstack Todo List Application",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/index.ts",
+    "serve:client": "cd client && npm run serve",
+    "watch:client": "cd client && npm run watch",
+    "build:client": "cd client && npm run build",
+    "dev:server": "ts-node-dev --respawn src/index.ts",
+    "build:server": "tsc",
+    "dev": "concurrently --kill-others \"npm run dev:server\" \"npm run watch:client\"",
+    "build": "npm run build:server && npm run build:client",
     "start": "node dist/index.js",
-    "build": "tsc",
     "test": "jest"
   },
   "repository": {
@@ -37,6 +42,7 @@
     "@types/mongoose": "^5.10.5",
     "@types/morgan": "^1.9.2",
     "@types/nodemailer": "^6.4.1",
+    "concurrently": "^6.2.0",
     "jest": "^27.0.3",
     "ts-jest": "^27.0.2",
     "ts-node-dev": "^1.1.6",

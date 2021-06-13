@@ -2,13 +2,15 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "jsx": "react",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["@types", "node_modules/@types"]
+    "baseUrl": "./src",
+    "paths": {
+      "~*": ["./*"]
+    }
   },
-  "exclude": ["src/**/__tests__", "node_modules", "client"]
+  "include": ["src/**/*"]
 }

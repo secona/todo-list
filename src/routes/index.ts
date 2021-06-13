@@ -1,6 +1,9 @@
-import { Application } from 'express';
+import express from 'express';
+import { resolve } from 'path';
 
-export default (app: Application) => {
+export default (app: express.Application) => {
+  app.use(express.static(resolve(__dirname, '../../client/dist')));
+
   /* This route is for user info CRUD */
   app.use('/api/users', require('./users.route').default);
 
