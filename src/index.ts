@@ -19,5 +19,5 @@ mountRoutes(app);
 
 app.use(errorHandler);
 app.listen(5000, () => {
-  console.log(LOG_PREFIX, 'Listening on port 5000');
+  console.log(LOG_PREFIX, 'Listening on port 5000 for', process.env.NODE_ENV);
 });

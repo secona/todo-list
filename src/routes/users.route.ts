@@ -6,7 +6,7 @@ import userController from '../controllers/user.controller';
 const router = express.Router();
 
 router.post('/register', validators.userBody(), userController.register);
-router.post('/signin', validators.userSignIn, userController.signIn);
+router.post('/login', validators.userLogin, userController.login);
 
 router
   .route('/:userId')

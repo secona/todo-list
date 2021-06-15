@@ -5,7 +5,7 @@ import verificationServices from '../services/verification.service';
 import toBoolean from '../utils/toBoolean';
 
 const userController: Record<
-  'byId' | 'register' | 'signIn' | 'update' | 'remove',
+  'byId' | 'register' | 'login' | 'update' | 'remove',
   RequestHandler
 > = {
   byId: async (req, res, next) => {
@@ -30,18 +30,20 @@ const userController: Record<
       .catch(next);
   },
 
-  signIn: async (req, res, next) => {
+  login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
       const user = await userServices.getOne({ email });
+      const id = String(user._id);
       await userServices.isPasswordCorrect(user, password);
 
       const token = await tokenServices.generateUserToken({
-        id: String(user._id),
+        id,
         email,
         password,
       });
-      res.status(200).json({ data: token });
+
+      res.status(200).json({ id, data: token });
     } catch (e) {
       next(e);
     }

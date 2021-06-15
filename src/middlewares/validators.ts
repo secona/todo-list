@@ -43,7 +43,7 @@ const validators = {
     });
   },
 
-  userSignIn: createValidator([
+  userLogin: createValidator([
     body('email', 'Invalid Email').isEmail(),
     body('password', 'Invalid Password').isString(),
   ]),
