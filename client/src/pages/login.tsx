@@ -38,11 +38,13 @@ export const Login = () => {
       <input
         type='text'
         value={login?.email}
+        placeholder='Email'
         onChange={e => setLogin({ ...login, email: e.target.value })}
       />
       <input
-        type='text'
+        type='password'
         value={login?.password}
+        placeholder='Password'
         onChange={e => setLogin({ ...login, password: e.target.value })}
       />
       <input type='submit' value='Submit' />

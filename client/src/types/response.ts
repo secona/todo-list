@@ -8,3 +8,7 @@ export interface ILoginResponse {
 export interface IGetUserResponse {
   data: IUser;
 }
+
+export interface IRegisterResponse {
+  data: IUser;
+}
