@@ -12,3 +12,13 @@ export interface IGetUserResponse {
 export interface IRegisterResponse {
   data: IUser;
 }
+
+export interface IErrorResponse {
+  error: {
+    location: string;
+    param: string;
+    value: any;
+    msg: any;
+    message?: string;
+  };
+}

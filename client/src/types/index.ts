@@ -11,7 +11,7 @@ export interface ITodo {
 export interface IUser {
   _id: string;
   verified: boolean;
-  todos: string[] | ITodo[];
+  todos: ITodo[];
   email: string;
   name: string;
   password: string;

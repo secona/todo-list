@@ -19,18 +19,17 @@ export const Login = () => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault();
-    axios
-      .post<ILoginResponse>('/api/users/login', login)
-      .then(res => {
-        if (res.status !== 200) {
-          setLogin({});
-          alert('Login unsuccessful');
-        } else {
-          localStorage.setItem('login', `${res.data.id};${res.data.data}`);
-          history.push('/');
-        }
-      })
-      .catch(err => alert(err.message));
+    console.log(login);
+    axios.post<ILoginResponse>('/api/users/login', login).then(
+      res => {
+        localStorage.setItem('login', `${res.data.id};${res.data.data}`);
+        history.push('/');
+      },
+      () => {
+        setLogin({});
+        alert('Login unsuccessful');
+      }
+    );
   };
 
   return (
