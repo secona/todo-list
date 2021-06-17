@@ -6,6 +6,7 @@ export const GlobalStyles = createGlobalStyle`
   * {
     font-family: Poppins, sans-serif;
     color: white;
+    box-sizing: border-box;
   }
 
   body {

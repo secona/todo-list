@@ -34,10 +34,11 @@ const DeleteButton = styled.button`
   background-color: #ff1744;
   border: none;
   border-radius: 0.3rem;
-  padding: 0.4rem 0.7rem;
+  padding: 0.6rem;
   color: white;
   cursor: pointer;
   transition-duration: 0.1s;
+  line-height: 0;
 
   &:hover {
     background-color: #d32f2f;

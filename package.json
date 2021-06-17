@@ -9,7 +9,7 @@
     "start-prod:server": "cross-env NODE_ENV=production node dist/index.js",
     "start-dev:server": "cross-env NODE_ENV=development ts-node-dev --respawn src/index.ts",
     "compile:server": "tsc",
-    "dev": "concurrently --kill-others \"npm run start-dev:server\" \"npm run build-dev:client\"",
+    "dev": "npm-run-all -p -r start-dev:server build-dev:client",
     "build": "npm run compile:server && npm run build-prod:client",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "test": "jest"
@@ -42,9 +42,9 @@
     "@types/mongoose": "^5.10.5",
     "@types/morgan": "^1.9.2",
     "@types/nodemailer": "^6.4.1",
-    "concurrently": "^6.2.0",
     "cross-env": "^7.0.3",
     "jest": "^27.0.3",
+    "npm-run-all": "^4.1.5",
     "ts-jest": "^27.0.2",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
