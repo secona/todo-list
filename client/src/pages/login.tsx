@@ -1,12 +1,24 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
+import { FaEnvelope, FaKey, FaArrowRight } from 'react-icons/fa';
+import { TextInput } from '../components/TextInput';
+import { Button } from '../components/Button';
 import { ILoginResponse } from '../types/response';
 
 interface ILogin {
   email?: string;
   password?: string;
 }
+
+const StyledForm = styled.form`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
 
 export const Login = () => {
   const [login, setLogin] = React.useState<ILogin>();
@@ -33,20 +45,25 @@ export const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
+    <StyledForm onSubmit={handleSubmit}>
+      <h1>Login</h1>
+      <TextInput
         type='text'
         value={login?.email}
+        LeftIcon={FaEnvelope}
         placeholder='Email'
         onChange={e => setLogin({ ...login, email: e.target.value })}
       />
-      <input
+      <TextInput
         type='password'
         value={login?.password}
+        LeftIcon={FaKey}
         placeholder='Password'
         onChange={e => setLogin({ ...login, password: e.target.value })}
       />
-      <input type='submit' value='Submit' />
-    </form>
+      <Button type='submit' RightIcon={FaArrowRight}>
+        Login
+      </Button>
+    </StyledForm>
   );
 };
