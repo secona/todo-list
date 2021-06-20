@@ -1,20 +1,19 @@
 import * as React from 'react';
-import axios from 'axios';
-import styled from 'styled-components';
+import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaArrowRight } from 'react-icons/fa';
 import { TextInput } from '../components/TextInput';
 import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
-import { ILoginResponse } from '../types/response';
 
-interface ILogin {
-  email?: string;
-  password?: string;
+interface ILoginValues {
+  email: string;
+  password: string;
 }
-// TODO: react-hook-form integration
+
+// TODO: integrate axios
 export const Login = () => {
-  const [login, setLogin] = React.useState<ILogin>();
+  const { register, handleSubmit } = useForm<ILoginValues>();
   const history = useHistory();
 
   React.useEffect(() => {
@@ -22,38 +21,21 @@ export const Login = () => {
     if (login) history.push('/');
   }, []);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = e => {
-    e.preventDefault();
-    console.log(login);
-    axios.post<ILoginResponse>('/api/users/login', login).then(
-      res => {
-        localStorage.setItem('login', `${res.data.id};${res.data.data}`);
-        history.push('/');
-      },
-      () => {
-        setLogin({});
-        alert('Login unsuccessful');
-      }
-    );
-  };
-
   return (
     <ContainerCenter>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(v => console.log(v))}>
         <h1>Login</h1>
         <TextInput
+          {...register('email', { required: true })}
           type='text'
-          value={login?.email}
           LeftIcon={FaEnvelope}
           placeholder='Email'
-          onChange={e => setLogin({ ...login, email: e.target.value })}
         />
         <TextInput
+          {...register('password', { required: true })}
           type='password'
-          value={login?.password}
           LeftIcon={FaKey}
           placeholder='Password'
-          onChange={e => setLogin({ ...login, password: e.target.value })}
         />
         <Button type='submit' RightIcon={FaArrowRight}>
           Login

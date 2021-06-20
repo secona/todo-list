@@ -12,7 +12,7 @@ interface WrapperProps {
   withLeftIcon?: boolean;
   withRightIcon?: boolean;
 }
-
+// TODO: fix box-shadow looks like it has offset
 const WrapperLabel = styled.label<WrapperProps>`
   position: relative;
   display: block;
@@ -20,7 +20,8 @@ const WrapperLabel = styled.label<WrapperProps>`
 
   & > svg {
     position: absolute;
-    top: 0.5rem;
+    top: 50%;
+    transform: translate(0, -50%);
 
     &.input-lefticon {
       left: 0.5rem;
@@ -36,7 +37,7 @@ const WrapperLabel = styled.label<WrapperProps>`
     border-radius: 0.3rem;
     background-color: #37474f;
     color: white;
-    padding: 0.4rem;
+    padding: 0.5rem;
     outline: none;
 
     ${props => props.withLeftIcon && 'padding-left: 2rem;'};
