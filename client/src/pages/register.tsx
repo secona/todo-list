@@ -1,11 +1,12 @@
 import * as React from 'react';
-import styled from 'styled-components';
 import axios, { AxiosError } from 'axios';
 import { useHistory } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { FaEnvelope, FaKey, FaUser, FaArrowRight } from 'react-icons/fa';
 import { TextInput } from '../components/TextInput';
+import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
-import { IRegisterResponse, IErrorResponse } from '../types/response';
+import { IRegisterResponse, IValidationErrorResponse } from '../types/response';
 
 interface IRegister {
   name?: string;
@@ -13,59 +14,61 @@ interface IRegister {
   password?: string;
 }
 
-const StyledForm = styled.form`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const Register = () => {
   const history = useHistory();
-  const [value, setValue] = React.useState<IRegister>();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<IRegister>();
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = e => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<IRegister> = async value => {
     axios.post<IRegisterResponse>('/api/users/register', value).then(
       () => {
         localStorage.removeItem('login'); // clear login
         history.push('/login');
       },
-      (err: AxiosError<IErrorResponse>) => {
-        alert(err.message);
-        setValue(undefined);
+      (err: AxiosError<IValidationErrorResponse>) => {
+        const errors = err.response?.data.error;
+        // TODO: handle validation errors
+        errors?.forEach(error => {
+          if (['name', 'email', 'password'].includes(error.param))
+            setError(error.param as keyof IRegister, {
+              type: 'validate',
+              message: error.msg,
+            });
+        });
       }
     );
   };
 
   return (
-    <StyledForm onSubmit={handleSubmit}>
-      <h1>Register</h1>
-      <TextInput
-        type='text'
-        value={value?.name}
-        LeftIcon={FaUser}
-        placeholder='Name'
-        onChange={e => setValue({ ...value, name: e.target.value })}
-      />
-      <TextInput
-        type='text'
-        value={value?.email}
-        LeftIcon={FaEnvelope}
-        placeholder='Email'
-        onChange={e => setValue({ ...value, email: e.target.value })}
-      />
-      <TextInput
-        type='password'
-        value={value?.password}
-        LeftIcon={FaKey}
-        placeholder='Password'
-        onChange={e => setValue({ ...value, password: e.target.value })}
-      />
-      <Button type='submit' RightIcon={FaArrowRight}>
-        Register
-      </Button>
-    </StyledForm>
+    <ContainerCenter>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <h1>Register</h1>
+        <TextInput
+          {...register('name', { required: true })}
+          LeftIcon={FaUser}
+          placeholder='Name'
+        />
+        <TextInput
+          {...register('email', { required: true })}
+          LeftIcon={FaEnvelope}
+          placeholder='Email'
+        />
+        <TextInput
+          {...register('password', { required: true, minLength: 8 })}
+          type='password'
+          LeftIcon={FaKey}
+          placeholder='Password'
+        />
+        <Button type='submit' RightIcon={FaArrowRight}>
+          Register
+        </Button>
+        {/* TODO: implement validation feedback */}
+        <pre>{JSON.stringify(errors, null, 2)}</pre>
+      </form>
+    </ContainerCenter>
   );
 };

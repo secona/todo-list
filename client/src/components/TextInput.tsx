@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { UseFormRegisterReturn } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 import styled from 'styled-components';
 
@@ -14,6 +15,7 @@ interface WrapperProps {
 
 const WrapperLabel = styled.label<WrapperProps>`
   position: relative;
+  display: block;
   margin-bottom: 0.2rem;
 
   & > svg {
@@ -46,12 +48,14 @@ const WrapperLabel = styled.label<WrapperProps>`
   }
 `;
 
-export const TextInput = ({ LeftIcon, RightIcon, ...rest }: Props) => {
-  return (
-    <WrapperLabel withLeftIcon={!!LeftIcon} withRightIcon={!!RightIcon}>
-      <input {...rest} />
-      {LeftIcon && <LeftIcon size={16} className='input-lefticon' />}
-      {RightIcon && <RightIcon size={16} className='input-righticon' />}
-    </WrapperLabel>
-  );
-};
+export const TextInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ LeftIcon, RightIcon, ...rest }, ref) => {
+    return (
+      <WrapperLabel withLeftIcon={!!LeftIcon} withRightIcon={!!RightIcon}>
+        <input {...rest} ref={ref} />
+        {LeftIcon && <LeftIcon size={16} className='input-lefticon' />}
+        {RightIcon && <RightIcon size={16} className='input-righticon' />}
+      </WrapperLabel>
+    );
+  }
+);

@@ -14,9 +14,18 @@ const WrapperButton = styled.button<Props>`
   border: none;
   border-radius: 0.3rem;
   color: white;
+  cursor: pointer;
 
   ${props => props.LeftIcon && 'padding-left: 2rem;'}
   ${props => props.RightIcon && 'padding-right: 2rem;'}
+
+  &:hover {
+    background-color: #d32f2f;
+  }
+
+  &:active {
+    box-shadow: 0 0 0 0.2rem #d32f2fbf;
+  }
 
   & > svg {
     fill: white;

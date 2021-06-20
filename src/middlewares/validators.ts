@@ -43,11 +43,6 @@ const validators = {
     });
   },
 
-  userLogin: createValidator([
-    body('email', 'Invalid Email').isEmail(),
-    body('password', 'Invalid Password').isString(),
-  ]),
-
   todoBody(optional?: true) {
     return createValidator({
       title: {

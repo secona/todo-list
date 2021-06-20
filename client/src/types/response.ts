@@ -13,12 +13,17 @@ export interface IRegisterResponse {
   data: IUser;
 }
 
-export interface IErrorResponse {
+export interface IValidationErrorResponse {
   error: {
     location: string;
     param: string;
     value: any;
     msg: any;
-    message?: string;
+  }[];
+}
+
+export interface IErrorResponse {
+  error: {
+    message: string;
   };
 }
