@@ -1,12 +1,19 @@
 import * as React from 'react';
+import axios, { AxiosError } from 'axios';
 import { SchemaOf, object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaUser, FaArrowRight } from 'react-icons/fa';
 import { TextInput } from '../components/TextInput';
 import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
 import { Form } from '../components/Form';
+import {
+  IRegisterResponse,
+  IErrorResponse,
+  IValidationErrorResponse,
+} from '../types/response';
 
 interface IRegisterValues {
   name: string;
@@ -20,19 +27,35 @@ const schema: SchemaOf<IRegisterValues> = object().shape({
   password: string().min(8).required(),
 });
 
-// TODO: validation feedback
 export const Register = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<IRegisterValues>({
     resolver: yupResolver(schema),
   });
+  const history = useHistory();
+
+  const onSubmit: SubmitHandler<IRegisterValues> = value => {
+    axios.post<IRegisterResponse>('/api/users/register', value).then(
+      () => history.push('/login'), // TODO: ask to verify email
+      ({ response }: AxiosError<IValidationErrorResponse>) => {
+        const errors = response?.data.error;
+        if (response?.status === 422) {
+          return errors?.forEach(e => {
+            setError(e.param as keyof IRegisterValues, { message: e.msg });
+          });
+        }
+        alert('An error occurred');
+      }
+    );
+  };
 
   return (
     <ContainerCenter>
-      <Form onSubmit={handleSubmit(v => console.log(v))}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <h1>Register</h1>
         <TextInput
           {...register('name')}
