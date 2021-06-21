@@ -14,7 +14,11 @@ interface ILoginValues {
 
 // TODO: integrate axios
 export const Login = () => {
-  const { register, handleSubmit } = useForm<ILoginValues>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ILoginValues>();
   const history = useHistory();
 
   React.useEffect(() => {
@@ -27,13 +31,15 @@ export const Login = () => {
       <Form onSubmit={handleSubmit(v => console.log(v))}>
         <h1>Login</h1>
         <TextInput
-          {...register('email', { required: true })}
+          {...register('email', { required: 'email is a required field' })}
+          error={errors.email}
           type='text'
           LeftIcon={FaEnvelope}
           placeholder='Email'
         />
         <TextInput
-          {...register('password', { required: true })}
+          {...register('password', { required: 'email is a required field' })}
+          error={errors.password}
           type='password'
           LeftIcon={FaKey}
           placeholder='Password'

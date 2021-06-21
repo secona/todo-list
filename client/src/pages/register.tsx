@@ -22,7 +22,11 @@ const schema: SchemaOf<IRegisterValues> = object().shape({
 
 // TODO: validation feedback
 export const Register = () => {
-  const { register, handleSubmit } = useForm<IRegisterValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IRegisterValues>({
     resolver: yupResolver(schema),
   });
 
@@ -32,18 +36,21 @@ export const Register = () => {
         <h1>Register</h1>
         <TextInput
           {...register('name')}
+          error={errors.name}
           type='text'
           LeftIcon={FaUser}
           placeholder='Name'
         />
         <TextInput
           {...register('email')}
+          error={errors.email}
           type='text'
           LeftIcon={FaEnvelope}
           placeholder='Email'
         />
         <TextInput
           {...register('password')}
+          error={errors.password}
           type='password'
           LeftIcon={FaKey}
           placeholder='Password'

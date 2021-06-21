@@ -1,18 +1,21 @@
 import * as React from 'react';
-import { IconType } from 'react-icons/lib';
 import styled from 'styled-components';
+import { IconType } from 'react-icons/lib';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import { FieldError } from 'react-hook-form';
 
 interface Props extends React.ComponentPropsWithoutRef<'input'> {
   LeftIcon?: IconType;
   RightIcon?: IconType;
+  error?: FieldError;
 }
 
 interface WrapperProps {
   withLeftIcon?: boolean;
   withRightIcon?: boolean;
 }
-// TODO: fix box-shadow looks like it has offset
-const WrapperLabel = styled.label<WrapperProps>`
+
+const Input = styled.label<WrapperProps>`
   position: relative;
   display: block;
 
@@ -36,6 +39,7 @@ const WrapperLabel = styled.label<WrapperProps>`
     background-color: #37474f;
     color: white;
     padding: 0.5rem;
+    width: 100%;
     outline: none;
 
     ${props => props.withLeftIcon && 'padding-left: 2rem;'};
@@ -47,14 +51,25 @@ const WrapperLabel = styled.label<WrapperProps>`
   }
 `;
 
+const ErrorMsg = styled.span`
+  display: block;
+  color: #e53935;
+  font-size: 0.75rem;
+  text-align: left;
+  padding: 0 0.5rem;
+`;
+
 export const TextInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ LeftIcon, RightIcon, ...rest }, ref) => {
+  ({ LeftIcon, RightIcon, error, ...rest }, ref) => {
     return (
-      <WrapperLabel withLeftIcon={!!LeftIcon} withRightIcon={!!RightIcon}>
-        <input {...rest} ref={ref} />
-        {LeftIcon && <LeftIcon size={16} className='input-lefticon' />}
-        {RightIcon && <RightIcon size={16} className='input-righticon' />}
-      </WrapperLabel>
+      <div>
+        <Input withLeftIcon={!!LeftIcon} withRightIcon={!!RightIcon}>
+          <input {...rest} ref={ref} />
+          {LeftIcon && <LeftIcon size={16} className='input-lefticon' />}
+          {RightIcon && <RightIcon size={16} className='input-righticon' />}
+        </Input>
+        {error && <ErrorMsg>{error.message}</ErrorMsg>}
+      </div>
     );
   }
 );
