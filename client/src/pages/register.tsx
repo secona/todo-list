@@ -6,6 +6,7 @@ import { FaEnvelope, FaKey, FaUser, FaArrowRight } from 'react-icons/fa';
 import { TextInput } from '../components/TextInput';
 import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
+import { Form } from '../components/Form';
 
 interface IRegisterValues {
   name: string;
@@ -27,7 +28,7 @@ export const Register = () => {
 
   return (
     <ContainerCenter>
-      <form onSubmit={handleSubmit(v => console.log(v))}>
+      <Form onSubmit={handleSubmit(v => console.log(v))}>
         <h1>Register</h1>
         <TextInput
           {...register('name')}
@@ -50,7 +51,7 @@ export const Register = () => {
         <Button type='submit' RightIcon={FaArrowRight}>
           Register
         </Button>
-      </form>
+      </Form>
     </ContainerCenter>
   );
 };

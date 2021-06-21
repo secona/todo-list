@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
 import { IconType } from 'react-icons/lib';
 import styled from 'styled-components';
 
@@ -16,7 +15,6 @@ interface WrapperProps {
 const WrapperLabel = styled.label<WrapperProps>`
   position: relative;
   display: block;
-  margin-bottom: 0.2rem;
 
   & > svg {
     position: absolute;
@@ -44,7 +42,7 @@ const WrapperLabel = styled.label<WrapperProps>`
     ${props => props.withRightIcon && 'padding-right: 2rem;'};
 
     &:focus {
-      box-shadow: 0 0 0 0.1rem #00b0ff;
+      box-shadow: 0 0 0 0.125rem #536dfe;
     }
   }
 `;

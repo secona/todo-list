@@ -5,6 +5,7 @@ import { FaEnvelope, FaKey, FaArrowRight } from 'react-icons/fa';
 import { TextInput } from '../components/TextInput';
 import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
+import { Form } from '../components/Form';
 
 interface ILoginValues {
   email: string;
@@ -23,7 +24,7 @@ export const Login = () => {
 
   return (
     <ContainerCenter>
-      <form onSubmit={handleSubmit(v => console.log(v))}>
+      <Form onSubmit={handleSubmit(v => console.log(v))}>
         <h1>Login</h1>
         <TextInput
           {...register('email', { required: true })}
@@ -40,7 +41,7 @@ export const Login = () => {
         <Button type='submit' RightIcon={FaArrowRight}>
           Login
         </Button>
-      </form>
+      </Form>
     </ContainerCenter>
   );
 };
