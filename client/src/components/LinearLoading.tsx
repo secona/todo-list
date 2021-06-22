@@ -8,7 +8,7 @@ const Move = keyframes`
 
 const Negative = styled.div`
   position: absolute;
-  width: calc(100% * 2/7);
+  width: calc(100% * 2 / 7);
   height: 100%;
   display: flex;
   animation: ${Move} 2s linear infinite;
@@ -21,7 +21,11 @@ const Bar = styled.div`
   height: 0.1rem;
   position: fixed;
   overflow: hidden;
-  background-color: #536dfe;
+  background-color: #2979ff;
 `;
 
-export const LinearLoading = () => <Bar><Negative /></Bar>;
+export const LinearLoading = () => (
+  <Bar>
+    <Negative />
+  </Bar>
+);

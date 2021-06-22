@@ -29,9 +29,11 @@ const Label = styled.label`
 `;
 
 const Input = styled.input<Omit<Props, 'error'>>`
-  border: none;
+  border-style: solid;
   border-radius: 0.3rem;
-  background-color: #37474f;
+  border-width: 0.1rem;
+  border-color: rgba(255, 255, 255, 24%);
+  background-color: transparent;
   color: white;
   padding: 0.5rem;
   width: 100%;
@@ -41,20 +43,21 @@ const Input = styled.input<Omit<Props, 'error'>>`
   ${props => props.RightIcon && 'padding-right: 2rem;'};
 
   &:focus {
-    box-shadow: 0 0 0 0.125rem #536dfe;
+    border-color: #2979ff;
   }
 
   &:disabled {
-    color: #546e7a;
+    color: rgba(255, 255, 255, 38%);
+    border-color: rgba(255, 255, 255, 12%);
     & ~ svg {
-      fill: #546e7a;
+      fill: rgba(255, 255, 255, 38%);
     }
   }
 `;
 
 const ErrorMsg = styled.span`
   display: block;
-  color: #e53935;
+  color: #f44336;
   font-size: 0.75rem;
   text-align: left;
   padding: 0 0.5rem;
