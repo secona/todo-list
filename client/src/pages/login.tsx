@@ -19,7 +19,7 @@ export const Login = () => {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ILoginValues>();
   const history = useHistory();
 
@@ -29,7 +29,7 @@ export const Login = () => {
   }, []);
 
   const onSubmit: SubmitHandler<ILoginValues> = value => {
-    axios.post<ILoginResponse>('/api/users/login', value).then(
+    return axios.post<ILoginResponse>('/api/users/login', value).then(
       ({ data }) => {
         localStorage.setItem('login', `${data.id};${data.data}`);
         history.push('/');
@@ -50,6 +50,7 @@ export const Login = () => {
         <h1>Login</h1>
         <TextInput
           {...register('email', { required: 'email is a required field' })}
+          disabled={isSubmitting}
           error={errors.email}
           type='text'
           LeftIcon={FaEnvelope}
@@ -59,14 +60,18 @@ export const Login = () => {
           {...register('password', {
             required: 'password is a required field',
           })}
+          disabled={isSubmitting}
           error={errors.password}
           type='password'
           LeftIcon={FaKey}
           placeholder='Password'
         />
-        <Button type='submit' RightIcon={FaArrowRight}>
-          Login
-        </Button>
+        <Button
+          type='submit'
+          RightIcon={FaArrowRight}
+          disabled={isSubmitting}
+          children='Login'
+        />
       </Form>
     </ContainerCenter>
   );

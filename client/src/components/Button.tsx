@@ -27,6 +27,15 @@ const WrapperButton = styled.button<Props>`
     box-shadow: 0 0 0 0.2rem #d32f2fbf;
   }
 
+  &:disabled {
+    background-color: #455a64;
+    color: #90a4ae;
+
+    & > svg {
+      fill: #90a4ae;
+    }
+  }
+
   & > svg {
     fill: white;
     position: absolute;

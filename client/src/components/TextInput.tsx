@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { IconType } from 'react-icons/lib';
-import { FaExclamationTriangle } from 'react-icons/fa';
 import { FieldError } from 'react-hook-form';
 
 interface Props extends React.ComponentPropsWithoutRef<'input'> {
@@ -10,12 +9,7 @@ interface Props extends React.ComponentPropsWithoutRef<'input'> {
   error?: FieldError;
 }
 
-interface WrapperProps {
-  withLeftIcon?: boolean;
-  withRightIcon?: boolean;
-}
-
-const Input = styled.label<WrapperProps>`
+const Label = styled.label`
   position: relative;
   display: block;
 
@@ -24,29 +18,36 @@ const Input = styled.label<WrapperProps>`
     top: 50%;
     transform: translate(0, -50%);
 
-    &.input-lefticon {
+    &.i-left {
       left: 0.5rem;
     }
 
-    &.input-righticon {
+    &.i-right {
       right: 0.5rem;
     }
   }
+`;
 
-  & > input {
-    border: none;
-    border-radius: 0.3rem;
-    background-color: #37474f;
-    color: white;
-    padding: 0.5rem;
-    width: 100%;
-    outline: none;
+const Input = styled.input<Omit<Props, 'error'>>`
+  border: none;
+  border-radius: 0.3rem;
+  background-color: #37474f;
+  color: white;
+  padding: 0.5rem;
+  width: 100%;
+  outline: none;
 
-    ${props => props.withLeftIcon && 'padding-left: 2rem;'};
-    ${props => props.withRightIcon && 'padding-right: 2rem;'};
+  ${props => props.LeftIcon && 'padding-left: 2rem;'};
+  ${props => props.RightIcon && 'padding-right: 2rem;'};
 
-    &:focus {
-      box-shadow: 0 0 0 0.125rem #536dfe;
+  &:focus {
+    box-shadow: 0 0 0 0.125rem #536dfe;
+  }
+
+  &:disabled {
+    color: #546e7a;
+    & ~ svg {
+      fill: #546e7a;
     }
   }
 `;
@@ -60,15 +61,15 @@ const ErrorMsg = styled.span`
 `;
 
 export const TextInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ LeftIcon, RightIcon, error, ...rest }, ref) => {
+  ({ error, ...rest }, ref) => {
     return (
       <div>
-        <Input withLeftIcon={!!LeftIcon} withRightIcon={!!RightIcon}>
-          <input {...rest} ref={ref} />
-          {LeftIcon && <LeftIcon size={16} className='input-lefticon' />}
-          {RightIcon && <RightIcon size={16} className='input-righticon' />}
-        </Input>
-        {error && <ErrorMsg>{error.message}</ErrorMsg>}
+        <Label>
+          <Input {...rest} ref={ref} />
+          {rest.LeftIcon && <rest.LeftIcon size={16} className='i-left' />}
+          {rest.RightIcon && <rest.RightIcon size={16} className='i-right' />}
+        </Label>
+        {error && <ErrorMsg children={error.message} />}
       </div>
     );
   }

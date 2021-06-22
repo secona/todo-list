@@ -32,14 +32,14 @@ export const Register = () => {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<IRegisterValues>({
     resolver: yupResolver(schema),
   });
   const history = useHistory();
 
   const onSubmit: SubmitHandler<IRegisterValues> = value => {
-    axios.post<IRegisterResponse>('/api/users/register', value).then(
+    return axios.post<IRegisterResponse>('/api/users/register', value).then(
       () => history.push('/login'), // TODO: ask to verify email
       ({ response }: AxiosError<IValidationErrorResponse>) => {
         const errors = response?.data.error;
@@ -59,6 +59,7 @@ export const Register = () => {
         <h1>Register</h1>
         <TextInput
           {...register('name')}
+          disabled={isSubmitting}
           error={errors.name}
           type='text'
           LeftIcon={FaUser}
@@ -66,6 +67,7 @@ export const Register = () => {
         />
         <TextInput
           {...register('email')}
+          disabled={isSubmitting}
           error={errors.email}
           type='text'
           LeftIcon={FaEnvelope}
@@ -73,14 +75,18 @@ export const Register = () => {
         />
         <TextInput
           {...register('password')}
+          disabled={isSubmitting}
           error={errors.password}
           type='password'
           LeftIcon={FaKey}
           placeholder='Password'
         />
-        <Button type='submit' RightIcon={FaArrowRight}>
-          Register
-        </Button>
+        <Button
+          type='submit'
+          RightIcon={FaArrowRight}
+          disabled={isSubmitting}
+          children='Register'
+        />
       </Form>
     </ContainerCenter>
   );
