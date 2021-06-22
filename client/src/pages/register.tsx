@@ -9,11 +9,8 @@ import { TextInput } from '../components/TextInput';
 import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
 import { Form } from '../components/Form';
-import {
-  IRegisterResponse,
-  IErrorResponse,
-  IValidationErrorResponse,
-} from '../types/response';
+import { LinearLoading } from '../components/LinearLoading';
+import { IRegisterResponse, IValidationErrorResponse } from '../types/response';
 
 interface IRegisterValues {
   name: string;
@@ -55,6 +52,7 @@ export const Register = () => {
 
   return (
     <ContainerCenter>
+      {isSubmitting && <LinearLoading />}
       <Form onSubmit={handleSubmit(onSubmit)}>
         <h1>Register</h1>
         <TextInput

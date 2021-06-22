@@ -7,6 +7,7 @@ import { TextInput } from '../components/TextInput';
 import { ContainerCenter } from '../components/ContainerCenter';
 import { Button } from '../components/Button';
 import { Form } from '../components/Form';
+import { LinearLoading } from '../components/LinearLoading';
 import { ILoginResponse, IErrorResponse } from '../types/response';
 
 interface ILoginValues {
@@ -46,6 +47,7 @@ export const Login = () => {
 
   return (
     <ContainerCenter>
+      {isSubmitting && <LinearLoading />}
       <Form onSubmit={handleSubmit(onSubmit)}>
         <h1>Login</h1>
         <TextInput
