@@ -28,11 +28,12 @@ const Label = styled.label`
   }
 `;
 
-const Input = styled.input<Omit<Props, 'error'>>`
+const Input = styled.input<Props>`
+  display: block;
   border-style: solid;
   border-radius: 0.3rem;
   border-width: 0.1rem;
-  border-color: rgba(255, 255, 255, 24%);
+  border-color: ${props => props.theme.elevationColor['24dp']};
   background-color: transparent;
   color: white;
   padding: 0.5rem;
@@ -42,35 +43,39 @@ const Input = styled.input<Omit<Props, 'error'>>`
   ${props => props.LeftIcon && 'padding-left: 2rem;'};
   ${props => props.RightIcon && 'padding-right: 2rem;'};
 
+  ${props =>
+    props.error && `border-color: ${props.theme.error.surface}; !important`}
+
   &:focus {
-    border-color: #2979ff;
+    border-color: ${props => props.theme.primary.surface};
   }
 
   &:disabled {
-    color: rgba(255, 255, 255, 38%);
-    border-color: rgba(255, 255, 255, 12%);
+    color: ${props => props.theme.disabled.onSurface};
+    border-color: ${props => props.theme.disabled.surface};
     & ~ svg {
-      fill: rgba(255, 255, 255, 38%);
+      fill: ${props => props.theme.disabled.onSurface};
     }
   }
 `;
 
 const ErrorMsg = styled.span`
   display: block;
-  color: #f44336;
+  color: ${props => props.theme.error.surface};
   font-size: 0.75rem;
   text-align: left;
   padding: 0 0.5rem;
 `;
 
 export const TextInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ error, ...rest }, ref) => {
+  (props, ref) => {
+    const { RightIcon, LeftIcon, error } = props;
     return (
       <div>
         <Label>
-          <Input {...rest} ref={ref} />
-          {rest.LeftIcon && <rest.LeftIcon size={16} className='i-left' />}
-          {rest.RightIcon && <rest.RightIcon size={16} className='i-right' />}
+          <Input {...props} ref={ref} />
+          {LeftIcon && <LeftIcon size={16} className='i-left' />}
+          {RightIcon && <RightIcon size={16} className='i-right' />}
         </Label>
         {error && <ErrorMsg children={error.message} />}
       </div>

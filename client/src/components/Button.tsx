@@ -10,7 +10,7 @@ interface Props extends React.ComponentPropsWithoutRef<'button'> {
 const WrapperButton = styled.button<Props>`
   position: relative;
   padding: 0.5rem 1rem;
-  background-color: #2979ff;
+  background-color: ${props => props.theme.primary.surface};
   border: none;
   border-radius: 0.3rem;
   color: white;
@@ -20,20 +20,20 @@ const WrapperButton = styled.button<Props>`
   ${props => props.RightIcon && 'padding-right: 2.5rem;'}
 
   &:hover {
-    background-color: #2979ffdf;
+    background-color: ${props => props.theme.primary.hover};
   }
 
   &:active {
-    background-color: #2979ffbf;
+    background-color: ${props => props.theme.primary.active};
   }
 
   &:disabled {
-    background-color: rgba(255, 255, 255, 12%);
-    color: rgba(255, 255, 255, 38%);
+    background-color: ${props => props.theme.disabled.surface};
+    color: ${props => props.theme.disabled.onSurface};
     cursor: default;
 
     & > svg {
-      fill: rgba(255, 255, 255, 38%);
+      fill: ${props => props.theme.disabled.onSurface};
     }
   }
 

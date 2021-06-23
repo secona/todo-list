@@ -52,6 +52,7 @@ export const Login = () => {
         <h1>Login</h1>
         <TextInput
           {...register('email', { required: 'email is a required field' })}
+          // sdfsdff
           disabled={isSubmitting}
           error={errors.email}
           type='text'

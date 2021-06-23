@@ -12,7 +12,7 @@ const Negative = styled.div`
   height: 100%;
   display: flex;
   animation: ${Move} 2s linear infinite;
-  background-color: #263238;
+  background-color: ${props => props.theme.elevationColor['00dp']};
 `;
 
 const Bar = styled.div`
@@ -21,7 +21,7 @@ const Bar = styled.div`
   height: 0.1rem;
   position: fixed;
   overflow: hidden;
-  background-color: #2979ff;
+  background-color: ${props => props.theme.primary.surface};
 `;
 
 export const LinearLoading = () => (

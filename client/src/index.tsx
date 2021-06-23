@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import { GlobalStyles } from './components/GlobalStyles';
+import { ThemeProvider } from 'styled-components';
+import { GlobalStyles } from './styles/GlobalStyles';
+import { theme } from './styles/theme';
 import App from './App';
 
 render(
   <>
     <GlobalStyles />
     <BrowserRouter>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   </>,
   document.getElementById('root')
