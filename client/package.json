@@ -4,9 +4,10 @@
   "description": "",
   "main": "dist/index.html",
   "scripts": {
-    "build-prod": "cross-env NODE_ENV=production parcel build ./src/index.html",
-    "build-dev": "cross-env NODE_ENV=development parcel watch ./src/index.html",
-    "start-dev": "parcel serve ./src/index.html --open",
+    "build": "cross-env NODE_ENV=production parcel build ./src/index.html",
+    "watch:build": "cross-env NODE_ENV=development parcel watch ./src/index.html",
+    "watch:type-check": "tsc --noEmit --watch --preserveWatchOutput",
+    "serve": "parcel serve ./src/index.html --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
