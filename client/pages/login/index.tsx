@@ -3,12 +3,12 @@ import axios, { AxiosError } from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaArrowRight } from 'react-icons/fa';
-import { TextInput } from '../components/TextInput';
-import { ContainerCenter } from '../components/ContainerCenter';
-import { Button } from '../components/Button';
-import { Form } from '../components/Form';
-import { LinearLoading } from '../components/LinearLoading';
-import { ILoginResponse, IErrorResponse } from '../types/response';
+import { TextInput } from '../../components/TextInput';
+import { ContainerCenter } from '../../components/ContainerCenter';
+import { Button } from '../../components/Button';
+import { Form } from '../../components/Form';
+import { LinearLoading } from '../../components/LinearLoading';
+import { ILoginResponse, IErrorResponse } from '../../types/response';
 
 interface ILoginValues {
   email: string;
@@ -52,7 +52,6 @@ export const Login = () => {
         <h1>Login</h1>
         <TextInput
           {...register('email', { required: 'email is a required field' })}
-          // sdfsdff
           disabled={isSubmitting}
           error={errors.email}
           type='text'

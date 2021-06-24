@@ -22,10 +22,10 @@ export const theme = {
     active: '#2196f3bf',
   },
   secondary: {
-    surface: '#20f3c6',
+    surface: '#f37f20',
     onSurface: '#000000',
-    hover: '#20f3c6df',
-    active: '#20f3c6bf',
+    hover: '#f37f20df',
+    active: '#f37f20bf',
   },
   error: {
     surface: '#f44336',

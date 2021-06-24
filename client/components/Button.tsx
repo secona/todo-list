@@ -1,55 +1,63 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { IconType } from 'react-icons/lib';
 
 interface Props extends React.ComponentPropsWithoutRef<'button'> {
   RightIcon?: IconType;
   LeftIcon?: IconType;
+  isSecondary?: boolean;
 }
 
 const WrapperButton = styled.button<Props>`
   position: relative;
   padding: 0.5rem 1rem;
-  background-color: ${props => props.theme.primary.surface};
   border: none;
   border-radius: 0.3rem;
-  color: white;
+  transition-duration: 0.1s;
   cursor: pointer;
 
   ${props => props.LeftIcon && 'padding-left: 2.5rem;'}
   ${props => props.RightIcon && 'padding-right: 2.5rem;'}
 
-  &:hover {
-    background-color: ${props => props.theme.primary.hover};
-  }
+  /* theming */
+  ${({ theme: { primary, secondary, disabled }, isSecondary }) => {
+    const toUse = isSecondary ? secondary : primary;
+    return css`
+      background-color: ${toUse.surface};
+      color: ${toUse.onSurface} !important;
 
-  &:active {
-    background-color: ${props => props.theme.primary.active};
-  }
+      &:hover {
+        background-color: ${toUse.hover};
+      }
 
-  &:disabled {
-    background-color: ${props => props.theme.disabled.surface};
-    color: ${props => props.theme.disabled.onSurface};
-    cursor: default;
+      &:active {
+        background-color: ${toUse.active};
+      }
 
-    & > svg {
-      fill: ${props => props.theme.disabled.onSurface};
-    }
-  }
+      &:disabled {
+        cursor: default;
+        background-color: ${disabled.surface};
+        color: ${disabled.onSurface};
 
-  & > svg {
-    fill: white;
+        & > svg {
+          fill: ${disabled.onSurface};
+        }
+      }
+    `;
+  }}
+
+  & > svg.icon {
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
+  }
 
-    &.button-lefticon {
-      left: 1rem;
-    }
+  & > svg.icon.icon-left {
+    left: 1rem;
+  }
 
-    &.button-righticon {
-      right: 1rem;
-    }
+  & > svg.icon.icon-right {
+    right: 1rem;
   }
 `;
 
@@ -57,8 +65,8 @@ export const Button = ({ children, ...rest }: Props) => {
   const { LeftIcon, RightIcon } = rest;
   return (
     <WrapperButton {...rest}>
-      {LeftIcon && <LeftIcon size={16} className='button-lefticon' />}
-      {RightIcon && <RightIcon size={16} className='button-righticon' />}
+      {LeftIcon && <LeftIcon size={16} className='icon icon-left' />}
+      {RightIcon && <RightIcon size={16} className='icon icon-right' />}
       {children}
     </WrapperButton>
   );

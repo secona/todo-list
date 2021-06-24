@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { IconType } from 'react-icons/lib';
 import { FieldError } from 'react-hook-form';
 
@@ -33,7 +33,6 @@ const Input = styled.input<Props>`
   border-style: solid;
   border-radius: 0.3rem;
   border-width: 0.1rem;
-  border-color: ${props => props.theme.elevationColor['24dp']};
   background-color: transparent;
   color: white;
   padding: 0.5rem;
@@ -46,17 +45,18 @@ const Input = styled.input<Props>`
   ${props =>
     props.error && `border-color: ${props.theme.error.surface}; !important`}
 
-  &:focus {
-    border-color: ${props => props.theme.primary.surface};
-  }
+  ${({ theme: { primary, disabled, elevationColor } }) => css`
+    border-color: ${elevationColor['24dp']};
 
-  &:disabled {
-    color: ${props => props.theme.disabled.onSurface};
-    border-color: ${props => props.theme.disabled.surface};
-    & ~ svg {
-      fill: ${props => props.theme.disabled.onSurface};
+    &:focus {
+      border-color: ${primary.surface};
     }
-  }
+
+    &:disabled {
+      color: ${disabled.onSurface} !important;
+      border-color: ${disabled.surface};
+    }
+  `}
 `;
 
 const ErrorMsg = styled.span`

@@ -2,8 +2,9 @@ import * as React from 'react';
 import styled from 'styled-components';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { FaTrashAlt } from 'react-icons/fa';
-import { ITodo } from '~types/index';
-import { IErrorResponse } from '~types/response';
+import { IconButton } from '../../../components/IconButton';
+import { ITodo } from '../../../types/index';
+import { IErrorResponse } from '../../../types/response';
 
 export interface TodoProps {
   todo: ITodo;
@@ -14,7 +15,7 @@ export interface TodoProps {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row-reverse;
-  background-color: #37474f;
+  background-color: ${p => p.theme.elevationColor['01dp']};
   padding: 0.5rem;
   margin-bottom: 0.2rem;
   color: white;
@@ -28,25 +29,6 @@ const Title = styled.p`
   padding-left: 0.55rem;
   flex-grow: 1;
   word-wrap: break-word;
-`;
-
-const DeleteButton = styled.button`
-  background-color: #ff1744;
-  border: none;
-  border-radius: 0.3rem;
-  padding: 0.6rem;
-  color: white;
-  cursor: pointer;
-  transition-duration: 0.1s;
-  line-height: 0;
-
-  &:hover {
-    background-color: #d32f2f;
-  }
-
-  &:active {
-    box-shadow: 0 0 0 0.2rem #d32f2fbf;
-  }
 `;
 
 export const Todo = ({ todo, afterDeletion, handleError }: TodoProps) => {
@@ -68,9 +50,9 @@ export const Todo = ({ todo, afterDeletion, handleError }: TodoProps) => {
 
   return (
     <Wrapper>
-      <DeleteButton onClick={handleDelete}>
+      <IconButton isSecondary onClick={handleDelete}>
         <FaTrashAlt />
-      </DeleteButton>
+      </IconButton>
       <Title>{todo.title}</Title>
     </Wrapper>
   );

@@ -5,12 +5,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaUser, FaArrowRight } from 'react-icons/fa';
-import { TextInput } from '../components/TextInput';
-import { ContainerCenter } from '../components/ContainerCenter';
-import { Button } from '../components/Button';
-import { Form } from '../components/Form';
-import { LinearLoading } from '../components/LinearLoading';
-import { IRegisterResponse, IValidationErrorResponse } from '../types/response';
+import { TextInput } from '../../components/TextInput';
+import { ContainerCenter } from '../../components/ContainerCenter';
+import { Button } from '../../components/Button';
+import { Form } from '../../components/Form';
+import { LinearLoading } from '../../components/LinearLoading';
+import {
+  IRegisterResponse,
+  IValidationErrorResponse,
+} from '../../types/response';
 
 interface IRegisterValues {
   name: string;
