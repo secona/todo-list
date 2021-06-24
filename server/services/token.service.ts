@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { LeanDocument } from 'mongoose';
-import userServices from '../services/user.service';
+import userServices from './user.service';
 import { IUserDoc } from '../models/user.model';
 import { JWT_KEY } from '../constants/env';
 import { ForbiddenError } from '../utils/errors';

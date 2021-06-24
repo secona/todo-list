@@ -7,11 +7,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./src",
+    "baseUrl": ".",
+    "noEmit": true,
+    "preserveWatchOutput": true,
     "paths": {
       "~*": ["./*"]
     }
   },
-  "exclude": ["src/types"],
-  "include": ["src/**/*"]
+  "exclude": ["./types", "./dist"],
 }

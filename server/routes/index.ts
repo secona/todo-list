@@ -1,7 +1,7 @@
 import express from 'express';
 import { resolve } from 'path';
 
-const distFolder = resolve(__dirname, '../../client/dist');
+const distFolder = resolve(__dirname, '../../dist/client');
 
 export default (app: express.Application) => {
   app.use(express.static(distFolder));

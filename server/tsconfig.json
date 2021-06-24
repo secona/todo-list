@@ -2,13 +2,13 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "rootDir": ".",
+    "outDir": "../dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["@types", "node_modules/@types"]
+    "typeRoots": ["@types"]
   },
-  "exclude": ["src/**/__tests__", "node_modules", "client"]
+  "exclude": ["**/__tests__/**/*"]
 }

@@ -2,29 +2,24 @@
   "name": "todo-list",
   "version": "1.0.0",
   "description": "Fullstack Todo List Application",
-  "main": "index.js",
-  "scripts": {
-    "watch:build:client": "cd client && npm run watch:build",
-    "watch:type-check:client": "cd client && npm run watch:type-check",
-    "watch:start:server": "cross-env NODE_ENV=development ts-node-dev --respawn src/index.ts",
-    "build:client": "cd client && npm run build",
-    "build:server": "tsc",
-    "dev": "npm-run-all -p -r watch:**",
-    "build": "npm-run-all -s build:*",
-    "start": "cross-env NODE_ENV=production node dist/index.js",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/secona/todo-list.git"
-  },
   "author": "secona (https://github.com/secona)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/secona/todo-list/issues"
+  "private": true,
+  "scripts": {
+    "watch:build:client": "parcel watch client/index.html --dist-dir dist/client",
+    "watch:type-check:client": "tsc -w -p client",
+    "watch:start:server": "ts-node-dev --project server/tsconfig.json --respawn server/index.ts",
+    "build:client": "tsc -p client && parcel build client/index.html --dist-dir dist/client",
+    "build:server": "tsc -p server",
+    "dev": "run-p -r watch:**",
+    "build": "run-s build:*",
+    "start": "node dist/index.js",
+    "clean": "rimraf .parcel-cache dist",
+    "test": "jest"
   },
-  "homepage": "https://github.com/secona/todo-list#readme",
   "dependencies": {
+    "@hookform/resolvers": "^2.6.0",
+    "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
     "dotenv": "^9.0.0",
     "express": "^4.17.1",
@@ -32,7 +27,14 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.7",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.6.0"
+    "nodemailer": "^6.6.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-hook-form": "^7.9.0",
+    "react-icons": "^4.2.0",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.3.0",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -42,9 +44,14 @@
     "@types/mongoose": "^5.10.5",
     "@types/morgan": "^1.9.2",
     "@types/nodemailer": "^6.4.1",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/styled-components": "^5.1.10",
     "cross-env": "^7.0.3",
     "jest": "^27.0.3",
     "npm-run-all": "^4.1.5",
+    "parcel": "^2.0.0-beta.2",
     "ts-jest": "^27.0.2",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"

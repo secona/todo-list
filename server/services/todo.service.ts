@@ -1,7 +1,7 @@
 import { LeanDocument } from 'mongoose';
 import Todo, { ITodo, ITodoDoc } from '../models/todo.model';
 import User, { IUserDoc } from '../models/user.model';
-import userServices from '../services/user.service';
+import userServices from './user.service';
 import { NotFoundError } from '../utils/errors';
 import objectToString from '../utils/objectToString';
 
