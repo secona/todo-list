@@ -1,16 +1,18 @@
 import * as React from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 import { useHistory } from 'react-router-dom';
-import { Todo } from './components/Todo';
+import { Todos } from './components/Todos';
 import { Header } from './components/Header';
+import { NewTodoForm } from './components/NewTodoForm';
 import { Container } from '../../components/Container';
 import { LinearLoading } from '../../components/LinearLoading';
-import { IUser } from '../../types/index';
+import { IUser, ITodo } from '../../types/index';
 import { IGetUserResponse } from '../../types/response';
 
 export const Index = () => {
   const history = useHistory();
   const [user, setUser] = React.useState<IUser>();
+  const [newTodo, setNewTodo] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -20,7 +22,7 @@ export const Index = () => {
       return;
     }
 
-    const [id, token] = login!.split(';');
+    const [id, token] = login.split(';');
     const authorization = `Bearer ${token}`;
     const config: AxiosRequestConfig = { headers: { authorization } };
 
@@ -31,32 +33,39 @@ export const Index = () => {
       },
       () => history.push('/login')
     );
-  }, [setUser]);
+  }, [setUser, setLoading]);
 
   // TODO: fix this
-  const handleTodoDelete = (_id: string) => {
-    if (user) {
+  const handleTodoDelete = React.useCallback(
+    (_id: string) => {
+      if (!user) return;
       const idx = user.todos.findIndex(t => t._id === _id);
       const todos = user.todos.splice(idx, 1);
       setUser({ ...user, todos });
-    }
-  };
+    },
+    [user, setUser]
+  );
+
+  const afterCreation = React.useCallback(
+    (todo: ITodo) => {
+      if (!user) return;
+      const todos = [...user.todos, todo];
+      setUser({ ...user, todos });
+    },
+    [user, setUser]
+  );
 
   return (
     <>
       {loading && <LinearLoading />}
+      {newTodo && <NewTodoForm afterCreation={afterCreation} />}
       <Container>
-        <Header />
-        <div>
-          {user?.todos.map(todo => (
-            <Todo
-              todo={todo}
-              key={todo._id}
-              afterDeletion={handleTodoDelete}
-              handleError={() => history.push('/login')}
-            />
-          ))}
-        </div>
+        <Header buttonProps={{ onClick: () => setNewTodo(true) }} />
+        <Todos
+          todos={user?.todos}
+          handleDelete={handleTodoDelete}
+          handleError={() => history.push('/login')}
+        />
       </Container>
     </>
   );

@@ -2,6 +2,10 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { Button } from '../../../components/Button';
 
+interface Props {
+  buttonProps?: React.ComponentPropsWithoutRef<'button'>;
+}
+
 const WrapperDiv = styled.div`
   padding: 2rem 0;
   margin-bottom: 0.3rem;
@@ -15,12 +19,11 @@ const WrapperDiv = styled.div`
   }
 `;
 
-export const Header = () => {
-  // TODO: new todo button logic
+export const Header = ({ buttonProps }: Props) => {
   return (
     <WrapperDiv>
       <h1>Things to do</h1>
-      <Button>New</Button>
+      <Button {...buttonProps}>New</Button>
     </WrapperDiv>
   );
 };

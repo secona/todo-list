@@ -1,4 +1,4 @@
-import { IUser } from '.';
+import { IUser, ITodo } from '.';
 
 export interface ILoginResponse {
   id: string;
@@ -11,6 +11,10 @@ export interface IGetUserResponse {
 
 export interface IRegisterResponse {
   data: IUser;
+}
+
+export interface INewTodoResponse {
+  data: ITodo;
 }
 
 export interface IValidationErrorResponse {
