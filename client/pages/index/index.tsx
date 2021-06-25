@@ -58,7 +58,12 @@ export const Index = () => {
   return (
     <>
       {loading && <LinearLoading />}
-      {newTodo && <NewTodoForm afterCreation={afterCreation} />}
+      {newTodo && (
+        <NewTodoForm
+          popupProps={{ close: () => setNewTodo(false) }}
+          afterCreation={afterCreation}
+        />
+      )}
       <Container>
         <Header buttonProps={{ onClick: () => setNewTodo(true) }} />
         <Todos

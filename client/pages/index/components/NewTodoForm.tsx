@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import { Popup } from '../../../components/Popup';
+import { Popup, PopupProps } from '../../../components/Popup';
 import { Form } from '../../../components/Form';
 import { TextInput } from '../../../components/TextInput';
 import { Button } from '../../../components/Button';
@@ -12,7 +12,7 @@ import { INewTodoResponse } from '../../../types/response';
 
 interface Props {
   afterCreation?: (todo: ITodo) => void;
-  onClickOutside?: () => void;
+  popupProps?: PopupProps;
 }
 
 interface INewTodo {
@@ -20,33 +20,13 @@ interface INewTodo {
   description?: string;
 }
 
-export const NewTodoForm = ({ afterCreation, onClickOutside }: Props) => {
+export const NewTodoForm = ({ afterCreation, popupProps }: Props) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<INewTodo>();
   const history = useHistory();
-  const ref = React.useRef<HTMLFormElement>(null);
-
-  React.useEffect(() => {
-    const handleClick = (ev: MouseEvent) => {
-      if (!(ref.current as any).contains(ev.target))
-        onClickOutside?.();
-    };
-
-    const handleKeyUp = (ev: KeyboardEvent) => {
-      if (ev.key === 'Escape') onClickOutside?.();
-    };
-
-    document.addEventListener('mousedown', handleClick);
-    document.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClick);
-      document.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [ref.current]);
 
   const onSubmit: SubmitHandler<INewTodo> = async value => {
     const login = localStorage.getItem('login');
@@ -61,13 +41,14 @@ export const NewTodoForm = ({ afterCreation, onClickOutside }: Props) => {
         headers: { authorization: `Bearer ${token}` },
       })
       .then(res => afterCreation?.(res.data.data))
-      .catch(err => alert(err.message)); //TODO: handle error
+      .catch(err => alert(err.message)) //TODO: handle error
+      .finally(popupProps?.close);
   };
 
   return (
-    <Popup>
+    <Popup {...popupProps}>
       {isSubmitting && <LinearLoading />}
-      <Form ref={ref} onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <h1>New Todo</h1>
         <TextInput
           {...register('title', { required: 'title is a required field' })}

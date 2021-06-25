@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import styled, { keyframes } from 'styled-components';
 
 const Move = keyframes`
@@ -7,6 +8,7 @@ const Move = keyframes`
 `;
 
 const Negative = styled.div`
+  z-index: 100;
   position: absolute;
   width: calc(100% * 2 / 7);
   height: 100%;
@@ -16,6 +18,7 @@ const Negative = styled.div`
 `;
 
 const Bar = styled.div`
+  z-index: 100;
   width: 100%;
   top: 0;
   height: 0.1rem;
@@ -24,8 +27,10 @@ const Bar = styled.div`
   background-color: ${props => props.theme.primary.surface};
 `;
 
-export const LinearLoading = () => (
-  <Bar>
-    <Negative />
-  </Bar>
-);
+export const LinearLoading = () =>
+  createPortal(
+    <Bar>
+      <Negative />
+    </Bar>,
+    document.getElementById('portal')!
+  );
