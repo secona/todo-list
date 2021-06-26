@@ -20,7 +20,6 @@ const validators = {
         optional,
         isString: { bail: true, errorMessage: 'Invalid name' },
         notEmpty: { errorMessage: "Name mustn't be an empty string" },
-        escape: true,
       },
       email: {
         in: 'body',
@@ -51,14 +50,12 @@ const validators = {
         errorMessage: 'Invalid title',
         isString: { bail: true },
         notEmpty: true,
-        escape: true,
       },
       description: {
         in: 'body',
         errorMessage: 'Invalid description',
         isString: true,
         optional: true,
-        escape: true,
       },
     });
   },

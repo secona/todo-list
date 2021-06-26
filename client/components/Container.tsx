@@ -1,26 +1,26 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   margin: 0 auto;
-  width: 100%;
+  width: calc(100% - 40px);
 
-  @media only screen and (min-width: 640px) {
-    max-width: 640px;
+  @media only screen and (min-width: 576px) {
+    width: 540px;
   }
 
   @media only screen and (min-width: 768px) {
-    max-width: 768px;
+    width: 720px;
   }
 
-  @media only screen and (min-width: 1024px) {
-    max-width: 1024px;
+  @media only screen and (min-width: 992px) {
+    width: 960px;
   }
 
-  @media only screen and (min-width: 1280px) {
-    max-width: 1280px;
+  @media only screen and (min-width: 1200px) {
+    width: 1140px;
   }
 
-  @media only screen and (min-width: 1536px) {
-    max-width: 1536px;
+  @media only screen and (min-width: 1400px) {
+    width: 1320px;
   }
 `;
