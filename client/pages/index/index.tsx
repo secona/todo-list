@@ -35,12 +35,10 @@ export const Index = () => {
     );
   }, [setUser, setLoading]);
 
-  // TODO: fix this
   const handleTodoDelete = React.useCallback(
     (_id: string) => {
       if (!user) return;
-      const idx = user.todos.findIndex(t => t._id === _id);
-      const todos = user.todos.splice(idx, 1);
+      const todos = user.todos.filter(todo => todo._id !== _id);
       setUser({ ...user, todos });
     },
     [user, setUser]
