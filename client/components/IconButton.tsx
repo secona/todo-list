@@ -13,7 +13,7 @@ export const IconButton = styled.button<Props>`
   transition-duration: 0.1s;
   line-height: 0;
 
-  ${({ theme: { primary, secondary }, isSecondary }) => {
+  ${({ theme: { primary, secondary, disabled }, isSecondary }) => {
     const toUse = isSecondary ? secondary : primary;
     return css`
       background-color: ${toUse.surface};
@@ -25,6 +25,13 @@ export const IconButton = styled.button<Props>`
 
       &:active {
         background-color: ${toUse.active};
+      }
+
+      &:disabled {
+        background-color: ${disabled.surface};
+        * {
+          color: ${disabled.onSurface} !important;
+        }
       }
     `;
   }}

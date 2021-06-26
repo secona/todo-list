@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 import { useHistory } from 'react-router-dom';
-import { Todos } from './components/Todos';
+import { Todo } from './components/Todo';
 import { Header } from './components/Header';
 import { NewTodoForm } from './components/NewTodoForm';
 import { Container } from '../../components/Container';
@@ -35,19 +35,19 @@ export const Index = () => {
     );
   }, [setUser, setLoading]);
 
-  const handleTodoDelete = React.useCallback(
-    (_id: string) => {
+  const afterCreateTodo = React.useCallback(
+    (todo: ITodo) => {
       if (!user) return;
-      const todos = user.todos.filter(todo => todo._id !== _id);
+      const todos = [...user.todos, todo];
       setUser({ ...user, todos });
     },
     [user, setUser]
   );
 
-  const afterCreation = React.useCallback(
-    (todo: ITodo) => {
+  const removeTodo = React.useCallback(
+    (_id: string) => {
       if (!user) return;
-      const todos = [...user.todos, todo];
+      const todos = user.todos.filter(todo => todo._id !== _id);
       setUser({ ...user, todos });
     },
     [user, setUser]
@@ -59,16 +59,22 @@ export const Index = () => {
       {newTodo && (
         <NewTodoForm
           popupProps={{ close: () => setNewTodo(false) }}
-          afterCreation={afterCreation}
+          afterCreation={afterCreateTodo}
         />
       )}
       <Container>
         <Header buttonProps={{ onClick: () => setNewTodo(true) }} />
-        <Todos
-          todos={user?.todos}
-          handleDelete={handleTodoDelete}
-          handleError={() => history.push('/login')}
-        />
+        <div>
+          {user?.todos.map(todo => (
+            <Todo
+              todo={todo}
+              key={todo._id}
+              loading={[loading, setLoading]}
+              redirectTo={to => history.push(to)}
+              removeTodo={removeTodo}
+            />
+          ))}
+        </div>
       </Container>
     </>
   );

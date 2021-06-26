@@ -8,13 +8,14 @@ import { IErrorResponse } from '../../../types/response';
 
 export interface TodoProps {
   todo: ITodo;
-  afterDeletion?: (_id: string) => void;
-  handleError?: () => void;
+  removeTodo: (_id: string) => void;
+  redirectTo: (path: string) => void;
+  loading: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 }
 
 const Wrapper = styled.div`
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   background-color: ${p => p.theme.elevationColor['01dp']};
   padding: 0.5rem;
   margin-bottom: 0.2rem;
@@ -31,29 +32,37 @@ const Title = styled.p`
   word-wrap: break-word;
 `;
 
-export const Todo = ({ todo, afterDeletion, handleError }: TodoProps) => {
-  const handleDelete = () => {
+export const Todo = ({
+  todo,
+  removeTodo,
+  redirectTo,
+  loading: [loading, setLoading],
+}: TodoProps) => {
+  const deleteTodo = () => {
+    setLoading(true);
     const token = localStorage.getItem('login')?.split(';')[1];
-    const config: AxiosRequestConfig = {
+    const cfg: AxiosRequestConfig = {
       headers: { authorization: `Bearer ${token}` },
     };
 
-    axios.delete(`/api/users/${todo.owner}/todos/${todo._id}`, config).then(
-      () => afterDeletion?.(todo._id),
-      ({ response }: AxiosError<IErrorResponse>) => {
-        if (/^Todo.+not found$/.test(response?.data.error.message!))
-          return afterDeletion?.(todo._id);
-        handleError?.();
-      }
-    );
+    axios
+      .delete(`/api/users/${todo.owner}/todos/${todo._id}`, cfg)
+      .then(() => removeTodo(todo._id))
+      .catch(({ response }: AxiosError<IErrorResponse>) => {
+        if (response?.data.error.message.match(/^Todo.+not found$/))
+          return removeTodo(todo._id);
+        localStorage.removeItem('login');
+        redirectTo('/login');
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
     <Wrapper>
-      <IconButton isSecondary onClick={handleDelete}>
+      <Title>{todo.title}</Title>
+      <IconButton isSecondary onClick={deleteTodo} disabled={loading}>
         <FaTrashAlt />
       </IconButton>
-      <Title>{todo.title}</Title>
     </Wrapper>
   );
 };
