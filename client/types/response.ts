@@ -17,6 +17,10 @@ export interface INewTodoResponse {
   data: ITodo;
 }
 
+export interface IPatchTodoResponse {
+  data: ITodo;
+}
+
 export interface IValidationErrorResponse {
   error: {
     location: string;

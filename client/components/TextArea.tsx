@@ -16,8 +16,7 @@ export const TextArea = styled.textarea<Props>`
   width: 100%;
   outline: none;
   resize: vertical;
-  font-size: 1em;
-  max-height: 25vh;
+  font-size: 0.8em;
 
   ${p => p.error && `border-color: ${p.theme.error.surface} !important;`}
 

@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { useHistory } from 'react-router-dom';
 import { Todo } from './components/Todo';
 import { TodoList } from './components/TodoList';
+import { TodoInfo } from './components/TodoInfo';
 import { Header } from './components/Header';
 import { NewTodoForm } from './components/NewTodoForm';
 import { Container } from '../../components/Container';
@@ -14,6 +15,7 @@ export const Index = () => {
   const history = useHistory();
   const [user, setUser] = React.useState<IUser>();
   const [loading, setLoading] = React.useState(true);
+  const [todoOpen, setTodoOpen] = React.useState<ITodo | null>(null);
 
   React.useEffect(() => {
     const login = localStorage.getItem('login');
@@ -53,9 +55,28 @@ export const Index = () => {
     [user, setUser]
   );
 
+  const updateTodo = React.useCallback(
+    (newTodo: ITodo) => {
+      if (!user) return;
+      const todos = [...user.todos];
+      const idx = todos.findIndex(todo => todo._id === newTodo._id);
+      todos[idx] = newTodo;
+      setUser({ ...user, todos });
+    },
+    [user, setUser]
+  );
+
   return (
     <>
       {loading && <LinearLoading />}
+      {todoOpen && (
+        <TodoInfo
+          todo={todoOpen}
+          updateTodo={updateTodo}
+          redirectTo={to => history.push(to)}
+          closePopup={() => setTodoOpen(null)}
+        />
+      )}
       <Container>
         <Header>Things to do</Header>
         <TodoList>
@@ -66,6 +87,7 @@ export const Index = () => {
               key={todo._id}
               loading={[loading, setLoading]}
               redirectTo={to => history.push(to)}
+              setTodoOpen={setTodoOpen}
               removeTodo={removeTodo}
             />
           ))}
