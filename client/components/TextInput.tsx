@@ -34,7 +34,6 @@ const Input = styled.input<Props>`
   border-radius: 0.3rem;
   border-width: 0.1rem;
   background-color: transparent;
-  color: white;
   padding: 0.5rem;
   width: 100%;
   outline: none;
@@ -43,7 +42,7 @@ const Input = styled.input<Props>`
   ${props => props.RightIcon && 'padding-right: 2rem;'};
 
   ${props =>
-    props.error && `border-color: ${props.theme.error.surface}; !important`}
+    props.error && `border-color: ${props.theme.error.surface} !important;`}
 
   ${({ theme: { primary, disabled, elevationColor } }) => css`
     border-color: ${elevationColor['24dp']};

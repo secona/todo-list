@@ -18,7 +18,6 @@ const Wrapper = styled.div`
   flex-direction: row;
   background-color: ${p => p.theme.elevationColor['01dp']};
   padding: 0.5rem;
-  margin-bottom: 0.2rem;
   color: white;
   border-radius: 0.3rem;
   align-items: center;
@@ -27,7 +26,6 @@ const Wrapper = styled.div`
 const Title = styled.p`
   margin: 0;
   padding: 0;
-  padding-left: 0.55rem;
   flex-grow: 1;
   word-wrap: break-word;
 `;

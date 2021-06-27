@@ -2,29 +2,25 @@ import * as React from 'react';
 import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import { Popup, PopupProps } from '../../../components/Popup';
-import { Form } from '../../../components/Form';
 import { TextInput } from '../../../components/TextInput';
-import { Button } from '../../../components/Button';
 import { LinearLoading } from '../../../components/LinearLoading';
 import { ITodo } from '../../../types/index';
 import { INewTodoResponse } from '../../../types/response';
 
 interface Props {
   afterCreation?: (todo: ITodo) => void;
-  popupProps?: PopupProps;
 }
 
 interface INewTodo {
   title: string;
-  description?: string;
 }
 
-export const NewTodoForm = ({ afterCreation, popupProps }: Props) => {
+export const NewTodoForm = ({ afterCreation }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { isSubmitting },
   } = useForm<INewTodo>();
   const history = useHistory();
 
@@ -42,30 +38,17 @@ export const NewTodoForm = ({ afterCreation, popupProps }: Props) => {
       })
       .then(res => afterCreation?.(res.data.data))
       .catch(err => alert(err.message)) //TODO: handle error
-      .finally(popupProps?.close);
+      .finally(reset);
   };
 
   return (
-    <Popup {...popupProps}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {isSubmitting && <LinearLoading />}
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <h1>New Todo</h1>
-        <TextInput
-          {...register('title', { required: 'title is a required field' })}
-          disabled={isSubmitting}
-          error={errors.title}
-          placeholder='Title'
-        />
-        <TextInput
-          {...register('description')}
-          disabled={isSubmitting}
-          error={errors.description}
-          placeholder='Description'
-        />
-        <Button type='submit' disabled={isSubmitting}>
-          Create
-        </Button>
-      </Form>
-    </Popup>
+      <TextInput
+        {...register('title', { required: true })}
+        disabled={isSubmitting}
+        placeholder='New Todo'
+      />
+    </form>
   );
 };

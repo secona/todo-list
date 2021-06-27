@@ -2,6 +2,7 @@ import * as React from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 import { useHistory } from 'react-router-dom';
 import { Todo } from './components/Todo';
+import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
 import { NewTodoForm } from './components/NewTodoForm';
 import { Container } from '../../components/Container';
@@ -12,7 +13,6 @@ import { IGetUserResponse } from '../../types/response';
 export const Index = () => {
   const history = useHistory();
   const [user, setUser] = React.useState<IUser>();
-  const [newTodo, setNewTodo] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -35,7 +35,7 @@ export const Index = () => {
     );
   }, [setUser, setLoading]);
 
-  const afterCreateTodo = React.useCallback(
+  const postCreate = React.useCallback(
     (todo: ITodo) => {
       if (!user) return;
       const todos = [...user.todos, todo];
@@ -56,15 +56,10 @@ export const Index = () => {
   return (
     <>
       {loading && <LinearLoading />}
-      {newTodo && (
-        <NewTodoForm
-          popupProps={{ close: () => setNewTodo(false) }}
-          afterCreation={afterCreateTodo}
-        />
-      )}
       <Container>
-        <Header buttonProps={{ onClick: () => setNewTodo(true) }} />
-        <div>
+        <Header>Things to do</Header>
+        <TodoList>
+          <NewTodoForm afterCreation={postCreate} />
           {user?.todos.map(todo => (
             <Todo
               todo={todo}
@@ -74,7 +69,7 @@ export const Index = () => {
               removeTodo={removeTodo}
             />
           ))}
-        </div>
+        </TodoList>
       </Container>
     </>
   );
