@@ -10,7 +10,7 @@ const { isEmailAvailable } = userServices;
  */
 const validators = {
   mongoId: createValidator([
-    param(['todoIdd', 'todoId'], 'Invalid Id').isMongoId().optional(),
+    param(['userId', 'todoId'], 'Invalid Id').isMongoId().optional(),
   ]),
 
   userBody(optional?: true) {

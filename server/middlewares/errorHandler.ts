@@ -7,8 +7,11 @@ const errorHandler: ErrorRequestHandler = (
   res,
   _next
 ) => {
-  const { statusCode = 500, message } = error;
-  res.status(statusCode).json({ error: { message } });
+  const { statusCode = 500, message, name } = error;
+  res.status(statusCode).json({
+    message: 'an error occurred',
+    error: { message, name },
+  });
 };
 
 export default errorHandler;

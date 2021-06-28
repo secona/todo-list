@@ -8,29 +8,38 @@ const todoController: Record<
   all: (req, res, next) => {
     todoService
       .getAllUserTodos(req.user!)
-      .then(data => res.status(200).json({ data }))
+      .then(todo =>
+        res.status(200).json({
+          data: { todo },
+        })
+      )
       .catch(next);
   },
 
   new: (req, res, next) => {
     todoService
       .newTodo(req.user!, req.body)
-      .then(data => res.status(201).json({ data }))
+      .then(todo => {
+        res.status(201).json({
+          data: { todo },
+        });
+      })
       .catch(next);
   },
 
   getById: (req, res) => {
-    const data = req.todo;
-    res.status(200).json({ data });
+    res.status(200).json({
+      data: { todo: req.todo },
+    });
   },
 
   updateById: (req, res, next) => {
     todoService
       .updateTodo(req.todo!, req.body)
-      .then(data =>
+      .then(todo =>
         res.status(200).json({
-          message: `Successfully updated todo with id "${data?._id}"`,
-          data,
+          message: `updated todo with id "${todo?._id}"`,
+          data: { todo },
         })
       )
       .catch(next);
@@ -42,7 +51,8 @@ const todoController: Record<
       .deleteTodo(req.todo!)
       .then(() =>
         res.status(200).json({
-          message: `Successfully deleted todo with id "${todoId}"`,
+          message: `deleted todo with id "${todoId}"`,
+          data: { todo: null },
         })
       )
       .catch(next);

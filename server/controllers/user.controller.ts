@@ -14,7 +14,7 @@ const userController: Record<
       const user = !complete
         ? req.user!
         : await userServices.populateLean(req.user!);
-      res.status(200).json({ data: user });
+      res.status(200).json({ data: { user } });
     } catch (e) {
       next(e);
     }
@@ -23,9 +23,9 @@ const userController: Record<
   register: (req, res, next) => {
     userServices
       .createUser(req.body)
-      .then(data => {
-        verificationServices.generateTokenAndSend(data.email, data.id);
-        res.status(201).json({ data });
+      .then(user => {
+        verificationServices.generateTokenAndSend(user.email, user.id);
+        res.status(201).json({ data: { user } });
       })
       .catch(next);
   },
@@ -43,7 +43,7 @@ const userController: Record<
         password,
       });
 
-      res.status(200).json({ id, data: token });
+      res.status(200).json({ data: { id, token } });
     } catch (e) {
       next(e);
     }
@@ -52,10 +52,10 @@ const userController: Record<
   update: (req, res, next) => {
     userServices
       .updateUser(req.user!, req.body)
-      .then(data =>
+      .then(user =>
         res.status(200).json({
-          message: `Successfully updated user with id "${data?._id}"`,
-          data,
+          message: `updated user with id "${user?._id}"`,
+          data: { user },
         })
       )
       .catch(next);
@@ -66,7 +66,8 @@ const userController: Record<
       .deleteUser(req.user!)
       .then(() =>
         res.status(200).json({
-          message: `Successfully deleted user with id "${req.params.id}"`,
+          message: `deleted user with id "${req.params.id}"`,
+          data: { user: null },
         })
       )
       .catch(next);
