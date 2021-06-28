@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import verificationServices from '../services/verification.service';
 import userServices from '../services/user.service';
 import tokenServices from '../services/token.service';
-import { BadRequestError } from '../utils/errors';
+import { BaseError } from '../utils/errors';
 
 const verificationController: Record<
   'resendVerification' | 'confirm',
@@ -14,13 +14,14 @@ const verificationController: Record<
       .getOne({ email }, { allowUnverified: true })
       .then(user => {
         if (user.verified)
-          throw new BadRequestError(
-            `User with email "${user.email}" already verified`
-          );
+          throw new BaseError({
+            statusCode: 400,
+            message: `Email "${email}" is already verified`,
+          });
 
         verificationServices.generateTokenAndSend(user.email, user._id);
         res.status(200).json({
-          message: `Successfully sent verification link to "${user.email}"`,
+          message: `sent verification link to "${user.email}"`,
         });
       })
       .catch(next);
@@ -29,7 +30,15 @@ const verificationController: Record<
   confirm: (req, res, next) => {
     const token = req.query.token as string;
     if (!token)
-      return next(new BadRequestError('Token required for confirmation'));
+      return next(
+        new BaseError({
+          statusCode: 400,
+          message: 'token required',
+          details: {
+            token: '`token` variable is absent in query string',
+          },
+        })
+      );
 
     tokenServices.verifyEmailVerificationToken(token, (error, decoded) => {
       if (error || !decoded)
@@ -43,7 +52,7 @@ const verificationController: Record<
         .then(() => {
           // redirect to front-end, for not do this
           res.status(200).json({
-            message: `Successfully verified email for user with id "${decoded.id}"`,
+            message: `verified email for user with id "${decoded.id}"`,
           });
         })
         .catch(next);

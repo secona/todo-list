@@ -3,7 +3,7 @@ import { LeanDocument } from 'mongoose';
 import userServices from './user.service';
 import { IUserDoc } from '../models/user.model';
 import { JWT_KEY } from '../constants/env';
-import { ForbiddenError } from '../utils/errors';
+import { BaseError } from '../utils/errors';
 
 interface UserToken {
   id: string;
@@ -24,14 +24,18 @@ const tokenServices = {
   async verifyUserToken(token: string, user: LeanDocument<IUserDoc>) {
     const decoded = jwt.verify(token, JWT_KEY) as UserToken;
     if (decoded.id !== String(user._id))
-      throw new ForbiddenError(
-        'Invalid token. Token id does not match params id'
-      );
+      throw new BaseError({
+        statusCode: 403,
+        message: 'invalid token',
+        details: { token: 'token id does not match params id' },
+      });
 
     if (decoded.email !== user.email)
-      throw new ForbiddenError(
-        'Outdated token. User recently changed their email'
-      );
+      throw new BaseError({
+        statusCode: 403,
+        message: 'outdated token',
+        details: { token: 'user recently changed their email' },
+      });
 
     await userServices.isPasswordCorrect(user, decoded.password);
     return decoded;

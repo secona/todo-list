@@ -15,8 +15,9 @@ const createValidator = (v: ValidationChain[] | Schema) =>
     if (errors.isEmpty()) return next();
     res.status(422).json({
       error: {
+        statusCode: 422,
         message: 'validation error in request',
-        details: errors.array(),
+        validationErrors: errors.array(),
       },
     });
   });

@@ -2,16 +2,13 @@ import { ErrorRequestHandler } from 'express';
 import { BaseError } from '../utils/errors';
 
 const errorHandler: ErrorRequestHandler = (
-  error: BaseError,
-  _req,
+  err: BaseError | Error,
+  req,
   res,
-  _next
+  next
 ) => {
-  const { statusCode = 500, message, name } = error;
-  res.status(statusCode).json({
-    message: 'an error occurred',
-    error: { message, name },
-  });
+  const error = err instanceof BaseError ? err : new BaseError({ ...err });
+  res.status(error.statusCode).json({ error });
 };
 
 export default errorHandler;

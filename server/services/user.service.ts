@@ -3,11 +3,7 @@ import { LeanDocument } from 'mongoose';
 import User, { IUser, IUserDoc, IUserAllowed } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
-import {
-  NotFoundError,
-  ForbiddenError,
-  UnauthorizedError,
-} from '../utils/errors';
+import { BaseError } from '../utils/errors';
 import objectToString from '../utils/objectToString';
 
 const userServices = {
@@ -20,10 +16,16 @@ const userServices = {
     const data = await query.exec();
 
     if (!data)
-      throw new NotFoundError(`User with ${objectToString(filter)} not found`);
+      throw new BaseError({
+        statusCode: 404,
+        message: `User with ${objectToString(filter)} not found`,
+      });
 
     if (!options.allowUnverified && !data.verified)
-      throw new ForbiddenError(`Email "${data.email}" is unverified`);
+      throw new BaseError({
+        statusCode: 403,
+        message: `Email "${data.email}" is unverified`,
+      });
 
     return data;
   },
@@ -89,7 +91,11 @@ const userServices = {
   ) {
     if (typeof user === 'string') user = await this.getOne({ email: user });
     const result = await bcrypt.compare(password, user.password);
-    if (!result) throw new UnauthorizedError('Password incorrect');
+    if (!result)
+      throw new BaseError({
+        statusCode: 401,
+        message: 'Password incorrect',
+      });
     return result;
   },
 

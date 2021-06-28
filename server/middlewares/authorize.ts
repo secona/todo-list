@@ -3,7 +3,7 @@ import validators from './validators';
 import userServices from '../services/user.service';
 import todoServices from '../services/todo.service';
 import tokenServices from '../services/token.service';
-import { UnauthorizedError } from '../utils/errors';
+import { BaseError } from '../utils/errors';
 
 const authorize: RequestHandler[] = [
   validators.mongoId,
@@ -11,11 +11,12 @@ const authorize: RequestHandler[] = [
     try {
       const { userId, todoId } = req.params;
       const authHeader = req.headers.authorization;
-      const token = authHeader && authHeader.split(' ')[1];
+      const token = authHeader?.split(' ')[1];
       if (!token)
-        throw new UnauthorizedError(
-          'Bearer token required in `authorization` header'
-        );
+        throw new BaseError({
+          statusCode: 401,
+          message: 'Bearer token absent in `authorization` header',
+        });
 
       req.user = await userServices.getOne({ _id: userId });
       await tokenServices.verifyUserToken(token, req.user);

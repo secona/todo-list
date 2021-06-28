@@ -2,7 +2,7 @@ import { LeanDocument } from 'mongoose';
 import Todo, { ITodo, ITodoDoc } from '../models/todo.model';
 import User, { IUserDoc } from '../models/user.model';
 import userServices from './user.service';
-import { NotFoundError } from '../utils/errors';
+import { BaseError } from '../utils/errors';
 import objectToString from '../utils/objectToString';
 
 const todoServices = {
@@ -34,7 +34,10 @@ const todoServices = {
   ) {
     const todo = await Todo.findOne(filter).lean().exec();
     if (!todo)
-      throw new NotFoundError(`Todo with ${objectToString(filter)} not found`);
+      throw new BaseError({
+        statusCode: 404,
+        message: `Todo with ${objectToString(filter)} not found`,
+      });
     return todo;
   },
 
