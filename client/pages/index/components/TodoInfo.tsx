@@ -2,13 +2,12 @@ import * as React from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { patchTodo, ITodo } from '../../../api/todo';
 import { useClosePopup } from '../../../hooks/useClosePopup';
 import { LinearLoading } from '../../../components/LinearLoading';
 import { TextInput } from '../../../components/TextInput';
 import { TextArea } from '../../../components/TextArea';
 import { Button } from '../../../components/Button';
-import { ITodo } from '../../../types/index';
-import { IPatchTodoResponse } from '../../../types/response';
 
 interface Props {
   todo: ITodo;
@@ -58,16 +57,9 @@ export const TodoInfo = ({
   const ref = useClosePopup<HTMLDivElement>(closePopup);
 
   const onSubmit: SubmitHandler<TodoValues> = async value => {
-    const login = localStorage.getItem('login');
-    if (!login) return redirectTo('/login');
-
-    const [id, token] = login.split(';');
-    return axios
-      .patch<IPatchTodoResponse>(`/api/users/${id}/todos/${todo._id}`, value, {
-        headers: { authorization: `Bearer ${token}` },
-      })
+    return patchTodo(todo._id, value)
       .then(({ data: { data } }) => {
-        updateTodo(data);
+        updateTodo(data.todo!);
         closePopup();
       })
       .catch(err => alert(err.message));

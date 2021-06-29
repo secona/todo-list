@@ -3,17 +3,12 @@ import axios, { AxiosError } from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaArrowRight } from 'react-icons/fa';
+import { login, FailedResponse, LoginValues } from '../../api/user';
 import { TextInput } from '../../components/TextInput';
 import { ContainerCenter } from '../../components/ContainerCenter';
 import { Button } from '../../components/Button';
 import { Form } from '../../components/Form';
 import { LinearLoading } from '../../components/LinearLoading';
-import { ILoginResponse, IErrorResponse } from '../../types/response';
-
-interface ILoginValues {
-  email: string;
-  password: string;
-}
 
 export const Login = () => {
   const {
@@ -21,7 +16,7 @@ export const Login = () => {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<ILoginValues>();
+  } = useForm<LoginValues>();
   const history = useHistory();
 
   React.useEffect(() => {
@@ -29,20 +24,24 @@ export const Login = () => {
     if (login) history.push('/');
   }, []);
 
-  const onSubmit: SubmitHandler<ILoginValues> = value => {
-    return axios.post<ILoginResponse>('/api/users/login', value).then(
-      ({ data }) => {
-        localStorage.setItem('login', `${data.id};${data.data}`);
+  const onSubmit: SubmitHandler<LoginValues> = async value => {
+    return login(value)
+      .then(({ data: { data } }) => {
+        localStorage.setItem('login', `${data.id};${data.token}`);
         history.push('/');
-      },
-      ({ response }: AxiosError<IErrorResponse>) => {
-        const message = response?.data.error.message.toLowerCase();
-        if (message?.includes('email')) return setError('email', { message });
-        if (message?.includes('password'))
-          return setError('password', { message });
-        alert('An error occurred');
-      }
-    );
+      })
+      .catch((err: AxiosError<FailedResponse> | Error) => {
+        if (axios.isAxiosError(err)) {
+          if (err.response) {
+            const message = err.response.data.error.message.toLowerCase();
+            if (message.includes('email'))
+              return setError('email', { message });
+            if (message.includes('password'))
+              return setError('password', { message });
+            alert('An error occurred');
+          } else console.log(err);
+        }
+      });
   };
 
   return (

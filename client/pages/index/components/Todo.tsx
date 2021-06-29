@@ -1,10 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { FaTrashAlt } from 'react-icons/fa';
+import { deleteTodo, FailedResponse, ITodo } from '../../../api/todo';
 import { IconButton } from '../../../components/IconButton';
-import { ITodo } from '../../../types/index';
-import { IErrorResponse } from '../../../types/response';
 
 export interface TodoProps {
   todo: ITodo;
@@ -44,19 +43,16 @@ export const Todo = ({
   setTodoOpen,
   loading: [loading, setLoading],
 }: TodoProps) => {
-  const deleteTodo = () => {
+  const onClick = () => {
     setLoading(true);
-    const token = localStorage.getItem('login')?.split(';')[1];
-    const cfg: AxiosRequestConfig = {
-      headers: { authorization: `Bearer ${token}` },
-    };
-
-    axios
-      .delete(`/api/users/${todo.owner}/todos/${todo._id}`, cfg)
+    deleteTodo(todo._id)
       .then(() => removeTodo(todo._id))
-      .catch(({ response }: AxiosError<IErrorResponse>) => {
-        if (response?.data.error.message.match(/^Todo.+not found$/))
-          return removeTodo(todo._id);
+      .catch((err: AxiosError<FailedResponse> | Error) => {
+        if (axios.isAxiosError(err)) {
+          if (err.response?.data.error.message.includes('todo')) {
+            return removeTodo(todo._id);
+          }
+        }
         localStorage.removeItem('login');
         redirectTo('/login');
       })
@@ -66,7 +62,7 @@ export const Todo = ({
   return (
     <Wrapper onClick={() => setTodoOpen(todo)}>
       <Title>{todo.title}</Title>
-      <IconButton isSecondary onClick={deleteTodo} disabled={loading}>
+      <IconButton isSecondary onClick={onClick} disabled={loading}>
         <FaTrashAlt />
       </IconButton>
     </Wrapper>

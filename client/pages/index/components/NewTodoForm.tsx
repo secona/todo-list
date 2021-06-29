@@ -2,17 +2,12 @@ import * as React from 'react';
 import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { newTodo, TodoValues, ITodo } from '../../../api/todo';
 import { TextInput } from '../../../components/TextInput';
 import { LinearLoading } from '../../../components/LinearLoading';
-import { ITodo } from '../../../types/index';
-import { INewTodoResponse } from '../../../types/response';
 
 interface Props {
   afterCreation?: (todo: ITodo) => void;
-}
-
-interface INewTodo {
-  title: string;
 }
 
 export const NewTodoForm = ({ afterCreation }: Props) => {
@@ -21,22 +16,12 @@ export const NewTodoForm = ({ afterCreation }: Props) => {
     handleSubmit,
     reset,
     formState: { isSubmitting },
-  } = useForm<INewTodo>();
+  } = useForm<TodoValues>();
   const history = useHistory();
 
-  const onSubmit: SubmitHandler<INewTodo> = async value => {
-    const login = localStorage.getItem('login');
-    if (!login) {
-      history.push('/login');
-      return;
-    }
-
-    const [id, token] = login.split(';');
-    return axios
-      .post<INewTodoResponse>(`/api/users/${id}/todos`, value, {
-        headers: { authorization: `Bearer ${token}` },
-      })
-      .then(res => afterCreation?.(res.data.data))
+  const onSubmit: SubmitHandler<TodoValues> = async value => {
+    return newTodo(value)
+      .then(res => afterCreation?.(res.data.data.todo!))
       .catch(err => alert(err.message)) //TODO: handle error
       .finally(reset);
   };
