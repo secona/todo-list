@@ -10,6 +10,7 @@ const todoController: Record<
       .getAllUserTodos(req.user!)
       .then(todo =>
         res.status(200).json({
+          success: true,
           data: { todo },
         })
       )
@@ -21,6 +22,7 @@ const todoController: Record<
       .newTodo(req.user!, req.body)
       .then(todo => {
         res.status(201).json({
+          success: true,
           data: { todo },
         });
       })
@@ -38,6 +40,7 @@ const todoController: Record<
       .updateTodo(req.todo!, req.body)
       .then(todo =>
         res.status(200).json({
+          success: true,
           message: `updated todo with id "${todo?._id}"`,
           data: { todo },
         })
@@ -51,6 +54,7 @@ const todoController: Record<
       .deleteTodo(req.todo!)
       .then(() =>
         res.status(200).json({
+          success: true,
           message: `deleted todo with id "${todoId}"`,
           data: { todo: null },
         })

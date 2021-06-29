@@ -8,7 +8,13 @@ const errorHandler: ErrorRequestHandler = (
   next
 ) => {
   const error = err instanceof BaseError ? err : new BaseError({ ...err });
-  res.status(error.statusCode).json({ error });
+  const { message, ...rest } = error;
+
+  res.status(error.statusCode).json({
+    success: false,
+    message,
+    error: rest,
+  });
 };
 
 export default errorHandler;

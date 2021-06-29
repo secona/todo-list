@@ -27,14 +27,28 @@ const tokenServices = {
       throw new BaseError({
         statusCode: 403,
         message: 'invalid token',
-        details: { token: 'token id does not match params id' },
+        type: 'auth',
+        details: [
+          {
+            name: 'id',
+            msg: "token's id does not match user's id",
+            value: decoded.id,
+          },
+        ],
       });
 
     if (decoded.email !== user.email)
       throw new BaseError({
         statusCode: 403,
         message: 'outdated token',
-        details: { token: 'user recently changed their email' },
+        type: 'auth',
+        details: [
+          {
+            name: 'email',
+            msg: 'user recently changed their email',
+            value: decoded.email,
+          },
+        ],
       });
 
     await userServices.isPasswordCorrect(user, decoded.password);

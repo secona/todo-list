@@ -16,6 +16,13 @@ const authorize: RequestHandler[] = [
         throw new BaseError({
           statusCode: 401,
           message: 'Bearer token absent in `authorization` header',
+          type: 'validation',
+          details: [
+            {
+              name: 'token',
+              msg: 'Bearer token absent in `authorization` header',
+            },
+          ],
         });
 
       req.user = await userServices.getOne({ _id: userId });

@@ -19,12 +19,27 @@ const userServices = {
       throw new BaseError({
         statusCode: 404,
         message: `User with ${objectToString(filter)} not found`,
+        type: 'resource',
+        details: [
+          {
+            name: 'user',
+            msg: `User with ${objectToString(filter)} not found`,
+          },
+        ],
       });
 
     if (!options.allowUnverified && !data.verified)
       throw new BaseError({
         statusCode: 403,
         message: `Email "${data.email}" is unverified`,
+        type: 'resource',
+        details: [
+          {
+            name: 'email',
+            msg: 'email is already verified',
+            value: data.email,
+          },
+        ],
       });
 
     return data;
@@ -95,6 +110,8 @@ const userServices = {
       throw new BaseError({
         statusCode: 401,
         message: 'Password incorrect',
+        type: 'auth',
+        details: [{ name: 'password', msg: 'Password incorrect' }],
       });
     return result;
   },

@@ -17,10 +17,19 @@ const verificationController: Record<
           throw new BaseError({
             statusCode: 400,
             message: `Email "${email}" is already verified`,
+            type: 'resource',
+            details: [
+              {
+                name: 'email',
+                msg: 'Email is already verified',
+                value: email,
+              },
+            ],
           });
 
         verificationServices.generateTokenAndSend(user.email, user._id);
         res.status(200).json({
+          success: true,
           message: `sent verification link to "${user.email}"`,
         });
       })
@@ -34,9 +43,13 @@ const verificationController: Record<
         new BaseError({
           statusCode: 400,
           message: 'token required',
-          details: {
-            token: '`token` variable is absent in query string',
-          },
+          type: 'validation',
+          details: [
+            {
+              name: 'token',
+              msg: 'token absent in query params',
+            },
+          ],
         })
       );
 

@@ -14,7 +14,7 @@ const userController: Record<
       const user = !complete
         ? req.user!
         : await userServices.populateLean(req.user!);
-      res.status(200).json({ data: { user } });
+      res.status(200).json({ success: true, data: { user } });
     } catch (e) {
       next(e);
     }
@@ -25,7 +25,7 @@ const userController: Record<
       .createUser(req.body)
       .then(user => {
         verificationServices.generateTokenAndSend(user.email, user.id);
-        res.status(201).json({ data: { user } });
+        res.status(201).json({ success: true, data: { user } });
       })
       .catch(next);
   },
@@ -43,7 +43,7 @@ const userController: Record<
         password,
       });
 
-      res.status(200).json({ data: { id, token } });
+      res.status(200).json({ success: true, data: { id, token } });
     } catch (e) {
       next(e);
     }
@@ -54,6 +54,7 @@ const userController: Record<
       .updateUser(req.user!, req.body)
       .then(user =>
         res.status(200).json({
+          success: true,
           message: `updated user with id "${user?._id}"`,
           data: { user },
         })
@@ -66,6 +67,7 @@ const userController: Record<
       .deleteUser(req.user!)
       .then(() =>
         res.status(200).json({
+          success: true,
           message: `deleted user with id "${req.params.id}"`,
           data: { user: null },
         })
