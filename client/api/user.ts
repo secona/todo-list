@@ -1,5 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ITodo } from './todo';
+import { ErrorField } from './shared/errors';
+import { fetchWithToken } from './shared/instances';
 
 export interface IUser {
   _id: string;
@@ -14,36 +16,33 @@ export interface IUser {
 }
 
 export interface SuccessResponse {
+  success: true;
   message?: string;
-  data: { user: IUser | null };
+  data: { user: IUser };
 }
 
 export interface FailedResponse {
+  success: false;
   message?: string;
-  error: {
-    statusCode: number;
-    message: string;
-    details: object;
-    validationErrors?: {
-      location: 'body' | 'cookies' | 'headers' | 'params' | 'query';
-      param: string;
-      value: any;
-      msg: any;
-    }[];
-  };
+  error: ErrorField;
 }
+
+export type UserResponse = SuccessResponse | FailedResponse;
 
 export interface LoginValues {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
+export interface SuccessLoginResponse {
+  success: true;
   data: {
     id: string;
     token: string;
   };
 }
+
+export type LoginResponse = SuccessLoginResponse | FailedResponse;
 
 export interface RegisterValues {
   name: string;
@@ -55,7 +54,7 @@ export const login = (data: LoginValues, config?: AxiosRequestConfig) =>
   axios.post<LoginResponse>('/api/users/login', data, config);
 
 export const register = (data: RegisterValues, config?: AxiosRequestConfig) =>
-  axios.post('/api/users/register', data);
+  axios.post<UserResponse>('api/users/register', data);
 
 export const get = (config?: AxiosRequestConfig) =>
-  axios.get<SuccessResponse>('/api/users/:userId', config);
+  fetchWithToken.get<UserResponse>('/api/users/:userId', config);

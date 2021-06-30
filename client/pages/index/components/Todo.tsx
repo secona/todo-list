@@ -1,13 +1,12 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import axios, { AxiosError } from 'axios';
 import { FaTrashAlt } from 'react-icons/fa';
-import { deleteTodo, FailedResponse, ITodo } from '../../../api/todo';
+import { deleteTodo, ITodo } from '../../../api/todo';
 import { IconButton } from '../../../components/IconButton';
 
 export interface TodoProps {
   todo: ITodo;
-  removeTodo: (_id: string) => void;
+  removeTodo: (todo: ITodo) => void;
   redirectTo: (path: string) => void;
   setTodoOpen: (todo: ITodo) => void;
   loading: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
@@ -16,24 +15,24 @@ export interface TodoProps {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   background-color: ${p => p.theme.elevationColor['01dp']};
   padding: 0.5rem;
   color: white;
   border-radius: 0.3rem;
   align-items: center;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${p => p.theme.elevationColor['02dp']};
-  }
 `;
 
 const Title = styled.p`
   margin: 0;
   padding: 0;
-  flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export const Todo = ({
@@ -46,22 +45,24 @@ export const Todo = ({
   const onClick = () => {
     setLoading(true);
     deleteTodo(todo._id)
-      .then(() => removeTodo(todo._id))
-      .catch((err: AxiosError<FailedResponse> | Error) => {
-        if (axios.isAxiosError(err)) {
-          if (err.response?.data.error.message.includes('todo')) {
-            return removeTodo(todo._id);
-          }
-        }
+      .then(({ data }) => {
+        if (data.success) return removeTodo(todo);
+        if (data.message?.includes(todo._id)) return removeTodo(todo);
         localStorage.removeItem('login');
         redirectTo('/login');
+      })
+      .catch(e => {
+        if (e.message === 'ERR_STORED_CREDENTIALS') {
+          localStorage.removeItem('login');
+          redirectTo('/login');
+        } else alert('asdfsadfasdf' + e.message);
       })
       .finally(() => setLoading(false));
   };
 
   return (
-    <Wrapper onClick={() => setTodoOpen(todo)}>
-      <Title>{todo.title}</Title>
+    <Wrapper>
+      <Title onClick={() => setTodoOpen(todo)}>{todo.title}</Title>
       <IconButton isSecondary onClick={onClick} disabled={loading}>
         <FaTrashAlt />
       </IconButton>

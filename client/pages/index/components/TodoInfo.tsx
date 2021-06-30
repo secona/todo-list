@@ -14,6 +14,7 @@ interface Props {
   closePopup: () => void;
   redirectTo: (to: string) => void;
   updateTodo: (todo: ITodo) => void;
+  removeTodo: (todo: ITodo) => void;
 }
 
 interface TodoValues {
@@ -46,10 +47,12 @@ export const TodoInfo = ({
   closePopup,
   redirectTo,
   updateTodo,
+  removeTodo,
 }: Props) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<TodoValues>({
     defaultValues: { ...todo },
@@ -57,12 +60,33 @@ export const TodoInfo = ({
   const ref = useClosePopup<HTMLDivElement>(closePopup);
 
   const onSubmit: SubmitHandler<TodoValues> = async value => {
-    return patchTodo(todo._id, value)
-      .then(({ data: { data } }) => {
-        updateTodo(data.todo!);
-        closePopup();
-      })
-      .catch(err => alert(err.message));
+    try {
+      const { data, status } = await patchTodo(todo._id, value);
+      if (data.success) {
+        updateTodo(data.data.todo);
+        return closePopup();
+      }
+
+      switch (status) {
+        case 404:
+          if (data.message?.includes('Todo')) {
+            removeTodo(todo);
+            return closePopup();
+          }
+        case 422:
+          return data.error.details?.forEach(e => {
+            setError(e.name, { message: e.msg });
+          });
+        default:
+          localStorage.removeItem('login');
+          redirectTo('/login');
+      }
+    } catch (e) {
+      if (e.message === 'ERR_STORED_CREDENTIALS') {
+        localStorage.removeItem('login');
+        redirectTo('/login');
+      } else alert(e.message);
+    }
   };
 
   return (

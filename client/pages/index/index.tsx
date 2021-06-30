@@ -19,14 +19,21 @@ export const Index = () => {
 
   React.useEffect(() => {
     get({ params: { complete: true } })
-      .then(res => {
-        if (res.data.data.user) setUser(res.data.data.user);
-        setLoading(false);
+      .then(({ data }) => {
+        if (data.success) {
+          setUser(data.data.user);
+          setLoading(false);
+        } else history.push('/login');
       })
-      .catch(() => history.push('/login'));
-  }, [setUser, setLoading]);
+      .catch(e => {
+        if (e.message === 'ERR_STORED_CREDENTIALS') {
+          localStorage.removeItem('login');
+          return history.push('/login');
+        } else alert(e.message);
+      });
+  }, []);
 
-  const postCreate = React.useCallback(
+  const addTodo = React.useCallback(
     (todo: ITodo) => {
       if (!user) return;
       const todos = [...user.todos, todo];
@@ -36,9 +43,9 @@ export const Index = () => {
   );
 
   const removeTodo = React.useCallback(
-    (_id: string) => {
+    (tbr: ITodo) => {
       if (!user) return;
-      const todos = user.todos.filter(todo => todo._id !== _id);
+      const todos = user.todos.filter(todo => todo._id !== tbr._id);
       setUser({ ...user, todos });
     },
     [user, setUser]
@@ -64,12 +71,13 @@ export const Index = () => {
           updateTodo={updateTodo}
           redirectTo={to => history.push(to)}
           closePopup={() => setTodoOpen(null)}
+          removeTodo={removeTodo}
         />
       )}
       <Container>
         <Header>Things to do</Header>
         <TodoList>
-          <NewTodoForm afterCreation={postCreate} />
+          <NewTodoForm addTodo={addTodo} />
           {user?.todos.map(todo => (
             <Todo
               todo={todo}

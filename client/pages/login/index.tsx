@@ -25,23 +25,19 @@ export const Login = () => {
   }, []);
 
   const onSubmit: SubmitHandler<LoginValues> = async value => {
-    return login(value)
-      .then(({ data: { data } }) => {
-        localStorage.setItem('login', `${data.id};${data.token}`);
-        history.push('/');
-      })
-      .catch((err: AxiosError<FailedResponse> | Error) => {
-        if (axios.isAxiosError(err)) {
-          if (err.response) {
-            const message = err.response.data.error.message.toLowerCase();
-            if (message.includes('email'))
-              return setError('email', { message });
-            if (message.includes('password'))
-              return setError('password', { message });
-            alert('An error occurred');
-          } else console.log(err);
-        }
+    try {
+      const { data } = await login(value);
+      if (data.success) {
+        localStorage.setItem('login', `${data.data.id};${data.data.token}`);
+        return history.push('/');
+      }
+
+      data.error.details?.forEach(e => {
+        setError(e.name, { message: e.msg });
       });
+    } catch (e) {
+      alert(e.message);
+    }
   };
 
   return (

@@ -34,21 +34,17 @@ export const Register = () => {
   const history = useHistory();
 
   const onSubmit: SubmitHandler<RegisterValues> = async value => {
-    return registerUser(value)
-      .then(() => history.push('/login')) // TODO: ask to verify email
-      .catch((err: AxiosError<FailedResponse>) => {
-        if (axios.isAxiosError(err)) {
-          if (err.response) {
-            const validationErrs = err.response.data.error.validationErrors;
-            if (validationErrs) {
-              return validationErrs.forEach(e => {
-                setError(e.param as keyof RegisterValues, { message: e.msg });
-              });
-            }
-            alert('An error occurred');
-          }
-        }
-      });
+    try {
+      const { data } = await registerUser(value);
+      if (data.success) {
+        localStorage.removeItem('login');
+        return history.push('/login');
+      }
+
+      data.error.details?.forEach(e => setError(e.name, { message: e.msg }));
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (

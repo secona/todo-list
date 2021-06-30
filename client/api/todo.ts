@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { ErrorField } from './shared/errors';
+import { fetchWithToken } from './shared/instances';
 
 export interface ITodo {
   _id: string;
@@ -11,24 +13,18 @@ export interface ITodo {
 }
 
 export interface SuccessResponse {
+  success: true;
   message?: string;
-  data: { todo: ITodo | null };
+  data: { todo: ITodo };
 }
 
 export interface FailedResponse {
+  success: false;
   message?: string;
-  error: {
-    statusCode: number;
-    message: string;
-    details: object;
-    validationErrors?: {
-      location: 'body' | 'cookies' | 'headers' | 'params' | 'query';
-      param: string;
-      value: any;
-      msg: any;
-    }[];
-  };
+  error: ErrorField;
 }
+
+export type TodoResponse = SuccessResponse | FailedResponse;
 
 export interface TodoValues {
   title: string;
@@ -36,17 +32,20 @@ export interface TodoValues {
 }
 
 export const newTodo = (data: TodoValues, config?: AxiosRequestConfig) =>
-  axios.post<SuccessResponse>('/api/users/:userId/todos', data, config);
+  fetchWithToken.post<TodoResponse>('/api/users/:userId/todos', data, config);
 
 export const deleteTodo = (todoId: string, config?: AxiosRequestConfig) =>
-  axios.delete<SuccessResponse>(`/api/users/:userId/todos/${todoId}`, config);
+  fetchWithToken.delete<TodoResponse>(
+    `/api/users/:userId/todos/${todoId}`,
+    config
+  );
 
 export const patchTodo = (
   todoId: string,
   data: TodoValues,
   config?: AxiosRequestConfig
 ) =>
-  axios.patch<SuccessResponse>(
+  fetchWithToken.patch<TodoResponse>(
     `/api/users/:userId/todos/${todoId}`,
     data,
     config
