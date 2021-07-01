@@ -24,7 +24,6 @@ const userController: Record<
     userServices
       .createUser(req.body)
       .then(user => {
-        verificationServices.generateTokenAndSend(user.email, user.id);
         res.status(201).json({ success: true, data: { user } });
       })
       .catch(next);

@@ -3,7 +3,7 @@ import verificationController from '../controllers/verification.controller';
 
 const router = express.Router();
 
-router.post('/resend-email', verificationController.resendVerification);
-router.get('/confirm', verificationController.confirm);
+router.post('/send', verificationController.send);
+router.post('/confirm', verificationController.confirm);
 
 export default router;
