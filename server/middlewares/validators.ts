@@ -10,7 +10,7 @@ const { isEmailAvailable } = userServices;
  */
 const validators = {
   mongoId: createValidator([
-    param(['userId', 'todoId'], 'Invalid Id').isMongoId().optional(),
+    param(['userId', 'todoId'], 'invalid Id').isMongoId().optional(),
   ]),
 
   userBody(optional?: true) {
@@ -19,24 +19,24 @@ const validators = {
         in: 'body',
         optional,
         isString: { bail: true, errorMessage: 'Invalid name' },
-        notEmpty: { errorMessage: "Name mustn't be an empty string" },
+        notEmpty: { errorMessage: "name mustn't be an empty string" },
       },
       email: {
         in: 'body',
         optional,
-        isEmail: { bail: true, errorMessage: 'Invalid email' },
+        isEmail: { bail: true, errorMessage: 'invalid email' },
         custom: {
           options: (email, { req }) => isEmailAvailable(email, req.params?.id),
-          errorMessage: 'Email is already in use',
+          errorMessage: 'email is already in use',
         },
       },
       password: {
         in: 'body',
         optional,
-        isString: { bail: true, errorMessage: 'Invalid password' },
+        isString: { bail: true, errorMessage: 'invalid password' },
         isLength: {
           options: { min: 8 },
-          errorMessage: 'Password must be 8 characters or more',
+          errorMessage: 'password must be 8 characters or more',
         },
       },
     });
@@ -47,13 +47,13 @@ const validators = {
       title: {
         in: 'body',
         optional,
-        errorMessage: 'Invalid title',
+        errorMessage: 'invalid title',
         isString: { bail: true },
         notEmpty: true,
       },
       description: {
         in: 'body',
-        errorMessage: 'Invalid description',
+        errorMessage: 'invalid description',
         isString: true,
         optional: true,
       },

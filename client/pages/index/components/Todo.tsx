@@ -47,7 +47,7 @@ export const Todo = ({
     deleteTodo(todo._id)
       .then(({ data }) => {
         if (data.success) return removeTodo(todo);
-        if (data.message?.includes(todo._id)) return removeTodo(todo);
+        if (data.message === 'todo not found') return removeTodo(todo);
         localStorage.removeItem('login');
         redirectTo('/login');
       })

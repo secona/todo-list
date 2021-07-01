@@ -1,5 +1,4 @@
 import * as React from 'react';
-import axios from 'axios';
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { patchTodo, ITodo } from '../../../api/todo';
@@ -69,7 +68,7 @@ export const TodoInfo = ({
 
       switch (status) {
         case 404:
-          if (data.message?.includes('Todo')) {
+          if (data.message === 'todo not found') {
             removeTodo(todo);
             return closePopup();
           }

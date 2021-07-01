@@ -4,7 +4,6 @@ import User, { IUser, IUserDoc, IUserAllowed } from '../models/user.model';
 import Todo from '../models/todo.model';
 import { SALT_ROUNDS } from '../constants';
 import { BaseError } from '../utils/errors';
-import objectToString from '../utils/objectToString';
 
 const userServices = {
   async getOne(
@@ -18,25 +17,24 @@ const userServices = {
     if (!data)
       throw new BaseError({
         statusCode: 404,
-        message: `User with ${objectToString(filter)} not found`,
+        message: `user not found`,
         type: 'resource',
-        details: [
-          {
-            name: 'user',
-            msg: `User with ${objectToString(filter)} not found`,
-          },
-        ],
+        details: Object.entries(filter).map(([key, value]) => ({
+          name: key,
+          msg: `${key} "${value}" not found`,
+          value,
+        })),
       });
 
     if (!options.allowUnverified && !data.verified)
       throw new BaseError({
         statusCode: 403,
-        message: `Email "${data.email}" is unverified`,
+        message: `email "${data.email}" is unverified`,
         type: 'resource',
         details: [
           {
             name: 'email',
-            msg: 'email is already verified',
+            msg: 'email is unverified',
             value: data.email,
           },
         ],
@@ -109,9 +107,9 @@ const userServices = {
     if (!result)
       throw new BaseError({
         statusCode: 401,
-        message: 'Password incorrect',
+        message: 'password incorrect',
         type: 'auth',
-        details: [{ name: 'password', msg: 'Password incorrect' }],
+        details: [{ name: 'password', msg: 'password incorrect' }],
       });
     return result;
   },
@@ -119,7 +117,7 @@ const userServices = {
   isEmailAvailable(email: string, id?: any) {
     return User.findOne({ email }).then(data => {
       if (data && data._id.toString() !== id) {
-        return Promise.reject('Email is already in use');
+        return Promise.reject('email is already in use');
       }
     });
   },

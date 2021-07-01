@@ -36,14 +36,13 @@ const todoServices = {
     if (!todo)
       throw new BaseError({
         statusCode: 404,
-        message: `Todo with ${objectToString(filter)} not found`,
+        message: 'todo not found',
         type: 'resource',
-        details: [
-          {
-            name: 'todo',
-            msg: `Todo with ${objectToString(filter)} not found`,
-          },
-        ],
+        details: Object.entries(filter).map(([key, value]) => ({
+          name: key,
+          msg: `${key} "${value}" not found`,
+          value,
+        })),
       });
     return todo;
   },
