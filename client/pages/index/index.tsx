@@ -1,13 +1,12 @@
 import * as React from 'react';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { get, IUser } from '../../api/user';
 import { ITodo } from '../../api/todo';
-import { Todo } from './components/Todo';
-import { TodoList } from './components/TodoList';
-import { TodoInfo } from './components/TodoInfo';
-import { Header } from './components/Header';
-import { NewTodoForm } from './components/NewTodoForm';
+import { Todo } from './Todo';
+import { TodoList } from './TodoList';
+import { TodoInfo } from './TodoInfo';
+import { Header } from './Header';
+import { NewTodoForm } from './NewTodoForm';
 import { Container } from '../../components/Container';
 import { LinearLoading } from '../../components/LinearLoading';
 

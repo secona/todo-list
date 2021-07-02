@@ -1,12 +1,12 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { patchTodo, ITodo } from '../../../api/todo';
-import { useClosePopup } from '../../../hooks/useClosePopup';
-import { LinearLoading } from '../../../components/LinearLoading';
-import { TextInput } from '../../../components/TextInput';
-import { TextArea } from '../../../components/TextArea';
-import { Button } from '../../../components/Button';
+import { patchTodo, ITodo } from '../../api/todo';
+import { useClosePopup } from '../../hooks/useClosePopup';
+import { LinearLoading } from '../../components/LinearLoading';
+import { TextInput } from '../../components/TextInput';
+import { TextArea } from '../../components/TextArea';
+import { Button } from '../../components/Button';
 
 interface Props {
   todo: ITodo;

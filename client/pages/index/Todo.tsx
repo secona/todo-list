@@ -1,8 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { FaTrashAlt } from 'react-icons/fa';
-import { deleteTodo, ITodo } from '../../../api/todo';
-import { IconButton } from '../../../components/IconButton';
+import { deleteTodo, ITodo } from '../../api/todo';
+import { IconButton } from '../../components/IconButton';
 
 export interface TodoProps {
   todo: ITodo;

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import { newTodo, TodoValues, ITodo } from '../../../api/todo';
-import { TextInput } from '../../../components/TextInput';
-import { LinearLoading } from '../../../components/LinearLoading';
+import { newTodo, TodoValues, ITodo } from '../../api/todo';
+import { TextInput } from '../../components/TextInput';
+import { LinearLoading } from '../../components/LinearLoading';
 
 interface Props {
   addTodo: (todo: ITodo) => void;

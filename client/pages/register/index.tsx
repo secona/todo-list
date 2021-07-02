@@ -38,7 +38,7 @@ export const Register = () => {
       const { data } = await registerUser(value);
       if (data.success) {
         localStorage.removeItem('login');
-        return history.push('/login');
+        return history.push(`/verify?email=${data.data.user.email}`);
       }
 
       data.error.details?.forEach(e => setError(e.name, { message: e.msg }));
