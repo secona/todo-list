@@ -8,6 +8,20 @@ const verificationController: Record<'send' | 'confirm', RequestHandler> = {
   send: async (req, res, next) => {
     try {
       const email = req.query.email as string;
+      if (!email)
+        throw new BaseError({
+          statusCode: 400,
+          message: 'email is absent in query params',
+          type: 'validation',
+          details: [
+            {
+              name: 'email',
+              msg: 'email absent in query params',
+              location: 'params',
+            },
+          ],
+        });
+
       const user = await userServices.getOne(
         { email },
         { allowUnverified: true }

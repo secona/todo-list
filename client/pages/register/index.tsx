@@ -1,19 +1,14 @@
 import * as React from 'react';
-import axios, { AxiosError } from 'axios';
 import { SchemaOf, object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaUser, FaArrowRight } from 'react-icons/fa';
-import {
-  register as registerUser,
-  FailedResponse,
-  RegisterValues,
-} from '../../api/user';
+import { register as registerUser, RegisterValues } from '../../api/user';
 import { TextInput } from '../../components/TextInput';
 import { ContainerCenter } from '../../components/ContainerCenter';
 import { Button } from '../../components/Button';
-import { Form } from '../../components/Form';
+import { Card } from '../../components/Card';
 import { LinearLoading } from '../../components/LinearLoading';
 
 const schema: SchemaOf<RegisterValues> = object().shape({
@@ -50,7 +45,7 @@ export const Register = () => {
   return (
     <ContainerCenter>
       {isSubmitting && <LinearLoading />}
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Card as='form' onSubmit={handleSubmit(onSubmit)}>
         <h1>Register</h1>
         <TextInput
           {...register('name')}
@@ -82,7 +77,7 @@ export const Register = () => {
           disabled={isSubmitting}
           children='Register'
         />
-      </Form>
+      </Card>
     </ContainerCenter>
   );
 };

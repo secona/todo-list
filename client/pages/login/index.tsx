@@ -1,13 +1,12 @@
 import * as React from 'react';
-import axios, { AxiosError } from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaArrowRight } from 'react-icons/fa';
-import { login, FailedResponse, LoginValues } from '../../api/user';
+import { login, LoginValues } from '../../api/user';
 import { TextInput } from '../../components/TextInput';
 import { ContainerCenter } from '../../components/ContainerCenter';
 import { Button } from '../../components/Button';
-import { Form } from '../../components/Form';
+import { Card } from '../../components/Card';
 import { LinearLoading } from '../../components/LinearLoading';
 
 export const Login = () => {
@@ -43,7 +42,7 @@ export const Login = () => {
   return (
     <ContainerCenter>
       {isSubmitting && <LinearLoading />}
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Card as='form' onSubmit={handleSubmit(onSubmit)}>
         <h1>Login</h1>
         <TextInput
           {...register('email', { required: 'email is a required field' })}
@@ -69,7 +68,7 @@ export const Login = () => {
           disabled={isSubmitting}
           children='Login'
         />
-      </Form>
+      </Card>
     </ContainerCenter>
   );
 };

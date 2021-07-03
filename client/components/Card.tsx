@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const Form = styled.form`
+export const Card = styled.div`
   background-color: ${props => props.theme.elevationColor['01dp']};
   min-width: 20rem;
   padding: 3rem;
