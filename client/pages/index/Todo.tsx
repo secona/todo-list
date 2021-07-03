@@ -2,13 +2,13 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { FaTrashAlt } from 'react-icons/fa';
 import { deleteTodo, ITodo } from '../../api/todo';
+import { useTodo } from './TodoContext';
 import { IconButton } from '../../components/IconButton';
+import { useHistory } from 'react-router-dom';
 
 export interface TodoProps {
   todo: ITodo;
-  removeTodo: (todo: ITodo) => void;
-  redirectTo: (path: string) => void;
-  setTodoOpen: (todo: ITodo) => void;
+  setOpenedTodo: (todo: ITodo) => void;
   loading: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 }
 
@@ -37,24 +37,25 @@ const Title = styled.p`
 
 export const Todo = ({
   todo,
-  removeTodo,
-  redirectTo,
-  setTodoOpen,
+  setOpenedTodo: setTodoOpen,
   loading: [loading, setLoading],
 }: TodoProps) => {
+  const { delete: removeTodo } = useTodo();
+  const history = useHistory();
+
   const onClick = () => {
     setLoading(true);
     deleteTodo(todo._id)
       .then(({ data }) => {
-        if (data.success) return removeTodo(todo);
-        if (data.message === 'todo not found') return removeTodo(todo);
+        if (data.success || data.message === 'todo not found')
+          return removeTodo(todo);
         localStorage.removeItem('login');
-        redirectTo('/login');
+        history.push('/login');
       })
       .catch(e => {
         if (e.message === 'ERR_STORED_CREDENTIALS') {
           localStorage.removeItem('login');
-          redirectTo('/login');
+          history.push('/login');
         } else alert('asdfsadfasdf' + e.message);
       })
       .finally(() => setLoading(false));

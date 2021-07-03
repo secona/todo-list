@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { get, IUser } from '../../api/user';
 import { ITodo } from '../../api/todo';
+import { TodoContext } from './TodoContext';
 import { Todo } from './Todo';
 import { TodoList } from './TodoList';
 import { TodoInfo } from './TodoInfo';
@@ -10,11 +11,11 @@ import { NewTodoForm } from './NewTodoForm';
 import { Container } from '../../components/Container';
 import { LinearLoading } from '../../components/LinearLoading';
 
-export const Index = () => {
-  const history = useHistory();
+export const Index = withRouter(props => {
+  const { history } = props;
   const [user, setUser] = React.useState<IUser>();
   const [loading, setLoading] = React.useState(true);
-  const [todoOpen, setTodoOpen] = React.useState<ITodo | null>(null);
+  const [openedTodo, setOpenedTodo] = React.useState<ITodo | null>(null);
 
   React.useEffect(() => {
     get({ params: { complete: true } })
@@ -32,63 +33,49 @@ export const Index = () => {
       });
   }, []);
 
-  const addTodo = React.useCallback(
-    (todo: ITodo) => {
-      if (!user) return;
-      const todos = [...user.todos, todo];
-      setUser({ ...user, todos });
-    },
-    [user, setUser]
-  );
+  const todoFunctions = React.useMemo(
+    () => ({
+      create: (todo: ITodo) => {
+        if (!user) return;
+        const todos = [...user.todos, todo];
+        setUser({ ...user, todos });
+      },
 
-  const removeTodo = React.useCallback(
-    (tbr: ITodo) => {
-      if (!user) return;
-      const todos = user.todos.filter(todo => todo._id !== tbr._id);
-      setUser({ ...user, todos });
-    },
-    [user, setUser]
-  );
+      delete: (todo: ITodo) => {
+        if (!user) return;
+        const todos = user.todos.filter(t => t._id !== todo._id);
+        setUser({ ...user, todos });
+      },
 
-  const updateTodo = React.useCallback(
-    (newTodo: ITodo) => {
-      if (!user) return;
-      const todos = [...user.todos];
-      const idx = todos.findIndex(todo => todo._id === newTodo._id);
-      todos[idx] = newTodo;
-      setUser({ ...user, todos });
-    },
+      update: (todo: ITodo) => {
+        if (!user) return;
+        const todos = [...user.todos];
+        const idx = todos.findIndex(t => t._id === todo._id);
+        todos[idx] = todo;
+        setUser({ ...user, todos });
+      },
+    }),
     [user, setUser]
   );
 
   return (
-    <>
+    <TodoContext.Provider value={todoFunctions}>
       {loading && <LinearLoading />}
-      {todoOpen && (
-        <TodoInfo
-          todo={todoOpen}
-          updateTodo={updateTodo}
-          redirectTo={to => history.push(to)}
-          closePopup={() => setTodoOpen(null)}
-          removeTodo={removeTodo}
-        />
-      )}
+      {openedTodo && <TodoInfo openedTodo={[openedTodo, setOpenedTodo]} />}
       <Container>
         <Header>Things to do</Header>
         <TodoList>
-          <NewTodoForm addTodo={addTodo} />
+          <NewTodoForm />
           {user?.todos.map(todo => (
             <Todo
               todo={todo}
               key={todo._id}
               loading={[loading, setLoading]}
-              redirectTo={to => history.push(to)}
-              setTodoOpen={setTodoOpen}
-              removeTodo={removeTodo}
+              setOpenedTodo={setOpenedTodo}
             />
           ))}
         </TodoList>
       </Container>
-    </>
+    </TodoContext.Provider>
   );
-};
+});

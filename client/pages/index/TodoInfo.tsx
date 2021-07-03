@@ -1,7 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { patchTodo, ITodo } from '../../api/todo';
+import { useTodo } from './TodoContext';
 import { useClosePopup } from '../../hooks/useClosePopup';
 import { LinearLoading } from '../../components/LinearLoading';
 import { TextInput } from '../../components/TextInput';
@@ -9,11 +11,7 @@ import { TextArea } from '../../components/TextArea';
 import { Button } from '../../components/Button';
 
 interface Props {
-  todo: ITodo;
-  closePopup: () => void;
-  redirectTo: (to: string) => void;
-  updateTodo: (todo: ITodo) => void;
-  removeTodo: (todo: ITodo) => void;
+  openedTodo: [ITodo, React.Dispatch<React.SetStateAction<ITodo | null>>];
 }
 
 interface TodoValues {
@@ -42,35 +40,32 @@ const Container = styled.div`
 `;
 
 export const TodoInfo = ({
-  todo,
-  closePopup,
-  redirectTo,
-  updateTodo,
-  removeTodo,
+  openedTodo: [openedTodo, setOpenedTodo],
 }: Props) => {
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<TodoValues>({
-    defaultValues: { ...todo },
-  });
-  const ref = useClosePopup<HTMLDivElement>(closePopup);
+  } = useForm<TodoValues>({ defaultValues: openedTodo });
+  const close = () => setOpenedTodo(null);
+  const ref = useClosePopup<HTMLDivElement>(close);
+  const { update, delete: deleteTodo } = useTodo();
+  const history = useHistory();
 
   const onSubmit: SubmitHandler<TodoValues> = async value => {
     try {
-      const { data, status } = await patchTodo(todo._id, value);
+      const { data, status } = await patchTodo(openedTodo._id, value);
       if (data.success) {
-        updateTodo(data.data.todo);
-        return closePopup();
+        update(data.data.todo);
+        return close();
       }
 
       switch (status) {
         case 404:
           if (data.message === 'todo not found') {
-            removeTodo(todo);
-            return closePopup();
+            deleteTodo(openedTodo);
+            return close();
           }
         case 422:
           return data.error.details?.forEach(e => {
@@ -78,12 +73,12 @@ export const TodoInfo = ({
           });
         default:
           localStorage.removeItem('login');
-          redirectTo('/login');
+          history.push('/login');
       }
     } catch (e) {
       if (e.message === 'ERR_STORED_CREDENTIALS') {
         localStorage.removeItem('login');
-        redirectTo('/login');
+        history.push('/login');
       } else alert(e.message);
     }
   };

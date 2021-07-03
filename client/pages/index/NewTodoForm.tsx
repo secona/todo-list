@@ -2,14 +2,11 @@ import * as React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { newTodo, TodoValues, ITodo } from '../../api/todo';
+import { useTodo } from './TodoContext';
 import { TextInput } from '../../components/TextInput';
 import { LinearLoading } from '../../components/LinearLoading';
 
-interface Props {
-  addTodo: (todo: ITodo) => void;
-}
-
-export const NewTodoForm = ({ addTodo }: Props) => {
+export const NewTodoForm = () => {
   const {
     register,
     handleSubmit,
@@ -18,12 +15,13 @@ export const NewTodoForm = ({ addTodo }: Props) => {
     formState: { isSubmitting },
   } = useForm<TodoValues>();
   const history = useHistory();
+  const { create } = useTodo();
 
   const onSubmit: SubmitHandler<TodoValues> = async value => {
     try {
       const { data, status } = await newTodo(value);
       if (data.success) {
-        return addTodo(data.data.todo);
+        return create(data.data.todo);
       }
 
       if (status === 422) {
