@@ -38,6 +38,7 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
+    "@parcel/transformer-webmanifest": "^2.0.0-nightly.2370",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.23",
