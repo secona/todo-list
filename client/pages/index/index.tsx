@@ -8,6 +8,7 @@ import { TodoList } from './TodoList';
 import { TodoInfo } from './TodoInfo';
 import { Header } from './Header';
 import { NewTodoForm } from './NewTodoForm';
+import { Topbar } from './Topbar';
 import { Container } from '../../components/Container';
 import { LinearLoading } from '../../components/LinearLoading';
 
@@ -62,7 +63,8 @@ export const Index = withRouter(props => {
     <TodoContext.Provider value={todoFunctions}>
       {loading && <LinearLoading />}
       {openedTodo && <TodoInfo openedTodo={[openedTodo, setOpenedTodo]} />}
-      <Container>
+      <Topbar user={user} />
+      <Container style={{ padding: '3rem 0' }}>
         <Header>Things to do</Header>
         <TodoList>
           <NewTodoForm />
