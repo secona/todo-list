@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FaCog } from 'react-icons/fa';
 import { IUser } from '../../api/user';
 import { IconButton } from '../../components/IconButton';
+import { DropdownMenu } from '../../components/DropdownMenu';
 
 interface Props {
   user: IUser | undefined;
@@ -53,6 +54,12 @@ const OptionButton = styled(IconButton)`
   }
 `;
 
+const DropdownWrapper = styled.div`
+  background-color: ${p => p.theme.elevationColor['06dp']};
+  padding: 1rem;
+  z-index: 10;
+`;
+
 export const Topbar = ({ user }: Props) => {
   return (
     <Wrapper>
@@ -60,9 +67,18 @@ export const Topbar = ({ user }: Props) => {
       {user && (
         <>
           <Name>{user.name}</Name>
-          <OptionButton>
-            <FaCog />
-          </OptionButton>
+          <DropdownMenu<HTMLButtonElement>
+            toggler={({ toggle, togglerRef }) => (
+              <OptionButton onClick={toggle} ref={togglerRef}>
+                <FaCog />
+              </OptionButton>
+            )}
+            children={({ dRef, ...props }) => (
+              <DropdownWrapper ref={dRef} {...props}>
+                Hello
+              </DropdownWrapper>
+            )}
+          />
         </>
       )}
     </Wrapper>

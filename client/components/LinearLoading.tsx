@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createPortal } from 'react-dom';
 import styled, { keyframes } from 'styled-components';
+import { Portal } from './Portal';
 
 const Move = keyframes`
   0% { transform: translate(-100%, 0) }
@@ -27,10 +27,10 @@ const Bar = styled.div`
   background-color: ${props => props.theme.primary.surface};
 `;
 
-export const LinearLoading = () =>
-  createPortal(
+export const LinearLoading = () => (
+  <Portal>
     <Bar>
       <Negative />
-    </Bar>,
-    document.getElementById('portal')!
-  );
+    </Bar>
+  </Portal>
+);
