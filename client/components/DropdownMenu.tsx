@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { Portal } from './Portal';
 
-interface TogglerProps<TToggler> {
+export interface TogglerProps<TToggler> {
   toggle: () => void;
   togglerRef: React.RefObject<TToggler>;
 }
 
-interface ChildProps extends React.ComponentPropsWithoutRef<'div'> {
+export interface MenuProps extends React.ComponentPropsWithoutRef<'div'> {
   dRef: (el: HTMLDivElement | null) => void;
 }
 
-interface Props<TToggler> {
+export interface DropdownMenuProps<TToggler> {
   toggler: (p: TogglerProps<TToggler>) => JSX.Element;
-  children: (p: ChildProps) => JSX.Element;
+  children: (p: MenuProps) => JSX.Element;
 }
 
 function getPosition(
@@ -35,7 +35,7 @@ function getPosition(
 }
 
 export const DropdownMenu = <TToggler extends HTMLElement>(
-  props: Props<TToggler>
+  props: DropdownMenuProps<TToggler>
 ) => {
   const togglerRef = React.useRef<TToggler>(null);
   const [open, setOpen] = React.useState(false);

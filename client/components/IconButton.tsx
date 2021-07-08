@@ -1,8 +1,7 @@
-import * as React from 'react';
 import styled, { css } from 'styled-components';
 
 interface Props {
-  isSecondary?: boolean;
+  color?: 'primary' | 'secondary' | 'transparent';
 }
 
 export const IconButton = styled.button<Props>`
@@ -13,8 +12,8 @@ export const IconButton = styled.button<Props>`
   transition-duration: 0.1s;
   line-height: 0;
 
-  ${({ theme: { primary, secondary, disabled }, isSecondary }) => {
-    const toUse = isSecondary ? secondary : primary;
+  ${({ theme, color }) => {
+    const toUse = theme[color || 'primary'];
     return css`
       background-color: ${toUse.surface};
       color: ${toUse.onSurface} !important;
@@ -28,9 +27,9 @@ export const IconButton = styled.button<Props>`
       }
 
       &:disabled {
-        background-color: ${disabled.surface};
+        background-color: ${theme.disabled.surface};
         * {
-          color: ${disabled.onSurface} !important;
+          color: ${theme.disabled.onSurface} !important;
         }
       }
     `;

@@ -56,7 +56,7 @@ export const Todo = ({
         if (e.message === 'ERR_STORED_CREDENTIALS') {
           localStorage.removeItem('login');
           history.push('/login');
-        } else alert('asdfsadfasdf' + e.message);
+        } else alert(e.message);
       })
       .finally(() => setLoading(false));
   };
@@ -64,7 +64,7 @@ export const Todo = ({
   return (
     <Wrapper>
       <Title onClick={() => setTodoOpen(todo)}>{todo.title}</Title>
-      <IconButton isSecondary onClick={onClick} disabled={loading}>
+      <IconButton color='secondary' onClick={onClick} disabled={loading}>
         <FaTrashAlt />
       </IconButton>
     </Wrapper>

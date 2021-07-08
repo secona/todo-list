@@ -27,6 +27,12 @@ export const theme = {
     hover: '#f37f20df',
     active: '#f37f20bf',
   },
+  transparent: {
+    surface: 'rgba(255, 255, 255, 0%)',
+    onSurface: '#ffffff',
+    hover: 'rgba(255, 255, 255, 7%)',
+    active: 'rgba(255, 255, 255, 12%)',
+  },
   error: {
     surface: '#f44336',
     onSurface: '#ffffff',

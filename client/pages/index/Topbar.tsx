@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { FaCog } from 'react-icons/fa';
 import { IUser } from '../../api/user';
+import { OptionsDropdown } from './OptionsDropdown';
 import { IconButton } from '../../components/IconButton';
 import { DropdownMenu } from '../../components/DropdownMenu';
 
@@ -41,25 +42,6 @@ const Name = styled.span`
   white-space: nowrap;
 `;
 
-const OptionButton = styled(IconButton)`
-  padding: 0;
-  background-color: rgba(255, 255, 255, 0);
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 4%);
-  }
-
-  &:active {
-    background-color: rgba(255, 255, 255, 12%);
-  }
-`;
-
-const DropdownWrapper = styled.div`
-  background-color: ${p => p.theme.elevationColor['06dp']};
-  padding: 1rem;
-  z-index: 10;
-`;
-
 export const Topbar = ({ user }: Props) => {
   return (
     <Wrapper>
@@ -69,15 +51,11 @@ export const Topbar = ({ user }: Props) => {
           <Name>{user.name}</Name>
           <DropdownMenu<HTMLButtonElement>
             toggler={({ toggle, togglerRef }) => (
-              <OptionButton onClick={toggle} ref={togglerRef}>
+              <IconButton color='transparent' onClick={toggle} ref={togglerRef}>
                 <FaCog />
-              </OptionButton>
+              </IconButton>
             )}
-            children={({ dRef, ...props }) => (
-              <DropdownWrapper ref={dRef} {...props}>
-                Hello
-              </DropdownWrapper>
-            )}
+            children={p => <OptionsDropdown {...p} email={user.email} />}
           />
         </>
       )}

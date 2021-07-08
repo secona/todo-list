@@ -5,7 +5,7 @@ import { IconType } from 'react-icons/lib';
 interface Props extends React.ComponentPropsWithoutRef<'button'> {
   RightIcon?: IconType;
   LeftIcon?: IconType;
-  isSecondary?: boolean;
+  color?: 'primary' | 'secondary' | 'transparent';
 }
 
 const WrapperButton = styled.button<Props>`
@@ -20,8 +20,8 @@ const WrapperButton = styled.button<Props>`
   ${props => props.RightIcon && 'padding-right: 2.5rem;'}
 
   /* theming */
-  ${({ theme: { primary, secondary, disabled }, isSecondary }) => {
-    const toUse = isSecondary ? secondary : primary;
+  ${({ theme, color }) => {
+    const toUse = theme[color || 'primary'];
     return css`
       background-color: ${toUse.surface};
       color: ${toUse.onSurface} !important;
@@ -36,11 +36,11 @@ const WrapperButton = styled.button<Props>`
 
       &:disabled {
         cursor: default;
-        background-color: ${disabled.surface};
-        color: ${disabled.onSurface};
+        background-color: ${theme.disabled.surface};
+        color: ${theme.disabled.onSurface};
 
         & > svg {
-          fill: ${disabled.onSurface};
+          fill: ${theme.disabled.onSurface};
         }
       }
     `;
