@@ -2,6 +2,9 @@
 
 Fullstack Todo List Application
 
+### Archive
+I have decided to archive this repository because I made many bad choices, and I don't feel like redoing everything.
+
 ### Favicon ✅
 
 The favicon was generated using the following graphics from Twitter Twemoji:
